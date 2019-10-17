@@ -1,7 +1,7 @@
 #include <math.h>
 #include <string.h>
 //to-do: check the FwdCycle, AngCycle, EStopCycle values in the old code and see if they're necessary for safety
-//set software enable if ESTOP > 1500
+
 //pins for RC input
 #define FWDPULSEPIN 2   //RC Channel 2
 #define ANGPULSEPIN 3   //RC Channel 1
@@ -12,7 +12,6 @@
 #define SWITCHCPIN 9
 #define SWITCHDPIN 10
 #define ESTOPPIN 11
-#define ESTOPSTATUSPIN 12
 //pins for sabertooth serial communication
 #define SABERTOOTHPINRX 0
 #define SABERTOOTHPINTX 1
@@ -23,12 +22,11 @@
 #define ANGPULSEDATA 1
 #define ESTOPPULSEDATA 2
 //positions for physical switch data in the Switches array
-#define SWITCH_A 0
-#define SWITCH_B 1
-#define SWITCH_C 2
-#define SWITCH_D 3
+#define SWITCH_A 0  //autonomous enable
+#define SWITCH_B 1  //Single/Double I mode
+#define SWITCH_C 2  //Debug mode
+#define SWITCH_D 3  //currently unused
 #define SWITCH_ESTOP 4
-#define SWITCH_ESTOP_STATUS 5
 //total number of RC channels
 #define RCNUMBEROFCHANNELS 3
 //for accessing the individual motor speeds in the MotorSpeeds array
@@ -42,6 +40,10 @@
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz)
 #define SABERTOOTHLOOPRATE 20
+//State definitions
+#define STATE_ESTOP 0
+#define STATE_RC 1
+#define STATE_AUTONOMOUS 2
 //holds the temporary start of signal data, for use in timing the PWM width of the RC input signals
 uint32_t RCStartPulse[RCNUMBEROFCHANNELS];
 //holds data from the RC PWM inputs
@@ -52,6 +54,8 @@ uint32_t RCPulseData[RCNUMBEROFCHANNELS];
 uint32_t MotorSpeeds[4];
 //for storing the states of the physical switches
 boolean Switches[6];
+//State variable
+int State;
 //for timing of debug output
 long LastDebug = 0;
 //for timing of the main ControlLoop
@@ -70,8 +74,8 @@ uint32_t RCMax = 193000;
 uint32_t RCMin = 96000;
 uint32_t RCTimeout = 1930000;
 uint32_t EStopThreshold = 180000;
-uint32_t MaxRCDesiredTicksPerSecond = 38500; //(1.5 m/s) * (1 rev/0.957557m) * (24 motor rev/wheel rev) * (1024 ticks/motor rev)
-float TicksToMotorSpeedMultiplier = 0.00329870;// Max motor command of 127 divided by max desired ticks per second of 38500
+uint32_t MaxRCDesiredTicksPerSecond = 51330; //(2 m/s) * (1 rev/0.957557m) * (24 motor rev/wheel rev) * (1024 ticks/motor rev)
+float TicksToMotorSpeedMultiplier = 0.00247419;// Max motor command of 127 divided by max desired ticks per second of 51330
 //wheel spacing constant
 float WheelSpacing = 0.77; //Wheel spacing (center to center) in meters
 //timer for reading switches
@@ -80,52 +84,37 @@ float WheelSpacing = 0.77; //Wheel spacing (center to center) in meters
 //the xxxPulseLow() functions save the signal length to the RCPulseData array
 //this was changed from using a generic timing function for all three in hopes that the time saved by not having to do a DigitalRead() would be greater than the additional time of having three more interrupts
 
-void FwdPulseHigh() {
-  RCStartPulse[FWDPULSEDATA] = micros();
-  //Serial.println("fwd pulse on");
-}
-void FwdPulseLow() {
-  RCTempPulseData[FWDPULSEDATA] = micros() - RCStartPulse[FWDPULSEDATA];
-  //Serial.println("fwd pulse off");
-}
-
-void AngPulseHigh() {
-  RCStartPulse[ANGPULSEDATA] = micros();
-  //Serial.println("ang pulse on");
-}
-void AngPulseLow() {
-  RCTempPulseData[ANGPULSEDATA] = micros() - RCStartPulse[ANGPULSEDATA];
-  //Serial.println("ang pulse off");
-}
-
-void EStopPulseHigh() {
-  RCStartPulse[ESTOPPULSEDATA] = micros();
-  //Serial.println("estop pulse on");
-}
-void EStopPulseLow() {
-  RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
-  //Serial.println("estop pulse off");
-}
-
 void FwdPulse(){
-  if(digitalRead(FWDPULSEPIN))
-    FwdPulseHigh();
-  else
-    FwdPulseLow();
+  if(digitalRead(FWDPULSEPIN)){
+    RCStartPulse[FWDPULSEDATA] = micros();
+    //Serial.println("fwd pulse on")
+  }
+  else{
+    RCTempPulseData[FWDPULSEDATA] = micros() - RCStartPulse[FWDPULSEDATA];
+    //Serial.println("fwd pulse off");
+  }
 }
 
 void AngPulse(){
-  if(digitalRead(ANGPULSEPIN))
-    AngPulseHigh();
-  else
-    AngPulseLow();
+  if(digitalRead(ANGPULSEPIN)){
+    RCStartPulse[ANGPULSEDATA] = micros();
+    //Serial.println("ang pulse on");
+  }
+  else{
+    RCTempPulseData[ANGPULSEDATA] = micros() - RCStartPulse[ANGPULSEDATA];
+    //Serial.println("ang pulse off");
+  }
 }
 
 void EStopPulse(){
-  if(digitalRead(ESTOPPULSEPIN))
-    EStopPulseHigh();
-  else
-    EStopPulseLow();
+  if(digitalRead(ESTOPPULSEPIN)){
+    RCStartPulse[ESTOPPULSEDATA] = micros();
+    //Serial.println("estop pulse on");
+  }
+  else{
+    RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
+    //Serial.println("estop pulse off");
+  }
 }
 
 //Copies over the entire temp array to a more permanant one before accessing so an interrupt won't change values while it's being accessed
@@ -146,6 +135,19 @@ void RCControl() {
   long RightMotorSpeed;
   long LeftMotorDirection;
   long RightMotorDirection;
+  //if EStop Pulse > 1500, disable the software enable output and put in EStop State
+  if(EStopPulse > 1500 || Switches[SWITCH_ESTOP] == 0){
+    State = STATE_ESTOP;
+    digitalWrite(SOFTWAREENABLEPIN,0);  //output low when in EStop State
+    MotorSpeeds[LEFTSPEED] = 0;
+    MotorSpeeds[RIGHTSPEED] = 0;
+    MotorSpeeds[LEFTDIRECTION] = 0;
+    MotorSpeeds[RIGHTDIRECTION] = 0;
+    return;
+  }
+  else
+    State = STATE_RC;
+
   //maybe do some sort of validation, but shouldn't have to because interrupts
   //check if the pulse is within the possible values
   if ((ForwardPulse >= RCMin) && (ForwardPulse <= RCMax) && (AngularPulse >= RCMin) && (AngularPulse <= RCMax))
@@ -213,23 +215,27 @@ void ReadSwitches()
   Switches[SWITCH_C] = digitalRead(SWITCHCPIN);
   Switches[SWITCH_D] = digitalRead(SWITCHDPIN);
   Switches[SWITCH_ESTOP] = digitalRead(ESTOPPIN);
-  Switches[SWITCH_ESTOP_STATUS] = digitalRead(ESTOPSTATUSPIN);
+  if(Switches[SWITCH_ESTOP]==0){ //active low
+    State = STATE_ESTOP;
+    digitalWrite(SOFTWAREENABLEPIN,0);  //output low when in EStop State
+  }
 }
 
-void SabertoothMotorCommandLoop()
+/*void SabertoothMotorCommandLoop()
 {
   MotorCommandLastSent = millis();
 
   //If robot is estopped, send a braking command to the motor controller as a secondary safety stop
-  if (Switches[SWITCH_ESTOP] == false)  //active low
+  if (State == STATE_ESTOP)  //active low
   {
     MotorSpeeds[LEFTSPEED] = B00000000;
     MotorSpeeds[RIGHTSPEED] = B00000000;
+    return;
   }
 
   //Motor Control Code
   // send packet to left motor
-  if (MotorSpeeds[LEFTSPEED] <= 127)
+  if (MotorSpeeds[LEFTSPEED] <= 127 && State != STATE_ESTOP)
   {
     LeftChecksum = (SabertoothAddress + MotorSpeeds[LEFTDIRECTION] + MotorSpeeds[LEFTSPEED]);
     Serial1.write(SabertoothAddress);
@@ -239,7 +245,7 @@ void SabertoothMotorCommandLoop()
   }
 
   // send packet to right motor
-  if (MotorSpeeds[RIGHTSPEED] <= 127)
+  if (MotorSpeeds[RIGHTSPEED] <= 127 && State != STATE_ESTOP)
   {
     RightChecksum = (SabertoothAddress + MotorSpeeds[RIGHTDIRECTION] + MotorSpeeds[RIGHTSPEED]);
     Serial1.write(SabertoothAddress);
@@ -249,27 +255,24 @@ void SabertoothMotorCommandLoop()
   }
 
 }
-
+*/
 void ControlLoop()
 {
   ControlLoopLastTime = millis(); // time the interval of ControlLoop running
-  bool EnableAutonomous = 0;
-  if ((Switches[SWITCH_A] == 0) && (Switches[SWITCH_ESTOP] == 1)) // E-stop 1 means switch is down and robot is disabled
-  {
-    EnableAutonomous = 1;
+  if(State != STATE_ESTOP){
+    digitalWrite(SOFTWAREENABLEPIN,1);  //output high when not in EStop State
+    if(Switches[SWITCH_A] == 0)
+      State = STATE_AUTONOMOUS;
+    else
+      State = STATE_RC;
   }
-  else if (Switches[SWITCH_A] == 1)
-  {
-    EnableAutonomous = 0;
-  }
-
   // switch modes based on autonomous state
-  if (EnableAutonomous == 0)
+  if (State != STATE_AUTONOMOUS)    //If we're in EStop mode, we're still going to get RC data, in case we're in EStop mode from the controller
   {
     //Serial.println("RC Mode active");
     RCControl();    // parse futaba rc pwm commands from rcpolling and generates MotorDirection and MotorSpeed
   }
-  /*else if (EnableAutonomous == 1)
+  /*else
     {
     //do autonomous things
     }
@@ -312,28 +315,30 @@ void DebugPrint()
   String OutputString = "";
   LastDebug = millis();
   //put debug info here
-  OutputString = "Forward Pulse: " + String(RCPulseData[FWDPULSEDATA]);
+  //OutputString = "Forward Pulse: " + String(RCPulseData[FWDPULSEDATA]);
+  //DebugOutput(OutputString, 0, true, false);
+  //OutputString = "Ang Pulse: " + String(RCPulseData[ANGPULSEDATA]);
+  //DebugOutput(OutputString, 0, true, false);
+  //OutputString = "EStop Pulse: " + String(RCPulseData[ESTOPPULSEDATA]);
+  //DebugOutput(OutputString, 0, true, false);
+  OutputString = "Left wheel speed: " + String(MotorSpeeds[LEFTSPEED]);
   DebugOutput(OutputString, 0, true, false);
-  OutputString = "Ang Pulse: " + String(RCPulseData[ANGPULSEDATA]);
+  OutputString = "Left wheel direction: " + String(MotorSpeeds[LEFTDIRECTION]);
   DebugOutput(OutputString, 0, true, false);
-  OutputString = "EStop Pulse: " + String(RCPulseData[ESTOPPULSEDATA]);
+  OutputString = "Right wheel speed: " + String(MotorSpeeds[RIGHTSPEED]);
   DebugOutput(OutputString, 0, true, false);
-  //OutputString = "Left wheel speed: " + String(MotorSpeeds[LEFTSPEED]);
-  //DebugOutput(OutputString, 0, true, false);
-  //OutputString = "Left wheel direction: " + String(MotorSpeeds[LEFTDIRECTION]);
-  //DebugOutput(OutputString, 0, true, false);
-  //OutputString = "Right wheel speed: " + String(MotorSpeeds[RIGHTSPEED]);
-  //DebugOutput(OutputString, 0, true, false);
-  //OutputString = "Right wheel direction: " + String(MotorSpeeds[RIGHTDIRECTION]);
-  //DebugOutput(OutputString, 0, true, false);
+  OutputString = "Right wheel direction: " + String(MotorSpeeds[RIGHTDIRECTION]);
+  DebugOutput(OutputString, 0, true, false);
+  OutputString = "Switches (A, B, C, D, ESTOP): " + String(Switches[SWITCH_A]) + ", " + String(Switches[SWITCH_B]) + ", " + String(Switches[SWITCH_C]) + ", " + String(Switches[SWITCH_D]) + ", " + String(Switches[SWITCH_ESTOP]) + ", ");
+  DebugOutput(OutputString, 0, true, false);
 }
 
 void setup() {
   //Main Setup function
   //serial communication with the motor controller on pins 0/1
-  Serial1.begin(9600);
+  Serial1.begin(38400);
   //serial communication with the console for debug purposes
-  Serial.begin(9600);
+  Serial.begin(38400);
   //Setting values we will need to repeatedly use for motor control
   MotorSpeeds[LEFTSPEED] = B00000000;      // set Motor 1 speed to 0 to start
   MotorSpeeds[RIGHTSPEED] = B00000000;     // set Motor 2 speed to 0 to start
@@ -350,7 +355,6 @@ void setup() {
   pinMode(SWITCHDPIN, INPUT);
   pinMode(ESTOPPIN, INPUT);
   //Set estop status pin as input
-  pinMode(ESTOPSTATUSPIN, INPUT);
   //Setup RC Input Pins
   pinMode(FWDPULSEPIN, INPUT_PULLUP);
   pinMode(ANGPULSEPIN, INPUT_PULLUP);
@@ -368,7 +372,6 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(SWITCHCPIN), ReadSwitches, CHANGE);
   attachInterrupt(digitalPinToInterrupt(SWITCHDPIN), ReadSwitches, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ESTOPPIN), ReadSwitches, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ESTOPSTATUSPIN), ReadSwitches, CHANGE);
 
   //some serial setup stuff.  take a closer look at the values he's passing in at some point
   // set baud rate to 9600
@@ -390,7 +393,7 @@ void setup() {
   delay(2000);
   //run all of the various sub-functions and establish an initial run time
   ControlLoop();
-  SabertoothMotorCommandLoop();
+  //SabertoothMotorCommandLoop();
   ReadSwitches();
 }
 
@@ -405,7 +408,7 @@ void loop() {
   // check to see if enough time has passed to run motor command loop and if the robot is in
   if ((millis() - MotorCommandLastSent) >= SABERTOOTHLOOPRATE )
   {
-    SabertoothMotorCommandLoop();
+    //SabertoothMotorCommandLoop();
   }
   // If switch C is enabled the robot is in debug mode; dump output to console
   /*if ((Switches[SWITCH_C] == 0) && (millis() - LastDebug) >= DEBUGOUTPUTRATE)
