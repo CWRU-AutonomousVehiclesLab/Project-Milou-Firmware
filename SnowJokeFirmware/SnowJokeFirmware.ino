@@ -56,9 +56,11 @@ uint32_t RCPulseData[RCNUMBEROFCHANNELS];
 uint32_t MotorSpeeds[4];
 //for storing the states of the physical switches
 boolean Switches[6];
-boolean PreviousEStop;
 //State variables
 int State;
+int NextState;
+
+bool RCEStop;
 //for timing of debug output
 long LastDebug = 0;
 //for timing of the main ControlLoop
@@ -73,11 +75,11 @@ int  LeftChecksum = (SabertoothAddress + MotorSpeeds[LEFTDIRECTION] + MotorSpeed
 int  RightChecksum = (SabertoothAddress + MotorSpeeds[RIGHTDIRECTION] + MotorSpeeds[RIGHTSPEED]); // Check right motor commands against this
 //constants relating to the RC functioning
 //! revisit these numbers, first four likely wrong
-uint32_t RCCenter = 144500;
-uint32_t RCMax = 193000;
-uint32_t RCMin = 96000;
+uint32_t RCCenter = 1500;
+uint32_t RCMax = 2300;
+uint32_t RCMin = 700;
 uint32_t RCTimeout = 1930000;
-uint32_t EStopThreshold = 1500;
+uint32_t EStopThreshold = 1300;
 //uint32_t MaxRCDesiredTicksPerSecond = 51330; //(2 m/s) * (1 rev/0.957557m) * (24 motor rev/wheel rev) * (1024 ticks/motor rev)
 //float TicksToMotorSpeedMultiplier = 0.00247419;// Max motor command of 127 divided by max desired ticks per second of 51330
 //physical constants for calculating speeds
@@ -129,7 +131,6 @@ void GetRCData() {
   noInterrupts(); //pauses interrupts while reading data
   memcpy((void *)RCPulseData, (const void *)RCTempPulseData, sizeof(RCTempPulseData));
   interrupts(); //resumes other interrupts
-
   return;
 }
 
@@ -140,9 +141,12 @@ void RCControl() {
   uint32_t EStopPulse = RCPulseData[ESTOPPULSEDATA];
   long forwardPercent;
   long angularPercent;
-  //if EStop Pulse > 1500, disable the software enable output
+  //if EStop Pulse > 1300, disable the software enable output
   if (EStopPulse > EStopThreshold) {
-    digitalWrite(SOFTWAREENABLEPIN, 0); //output low when in EStop State
+    State = STATE_ESTOP;
+    NextState = STATE_ESTOP;
+    digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+    RCEStop = true;
     MotorSpeeds[LEFTSPEED] = 0;
     MotorSpeeds[RIGHTSPEED] = 0;
     MotorSpeeds[LEFTDIRECTION] = 0;
@@ -150,10 +154,20 @@ void RCControl() {
     return;
   }
   else{
-    digitalWrite(SOFTWAREENABLEPIN, 1); //output high when not in EStop State
-    forwardPercent = map(ForwardPulse, RCMin, RCMax, -1, 1);
-    angularPercent = map(AngularPulse, RCMin, RCMax, -1, 1);
-    ConvertRCToMotorSpeeds(forwardPercent, angularPercent);
+    if(RCEStop == true){    //we're just leaving RC EStop
+      if(Switches[SWITCH_ESTOP]==0)
+        NextState = STATE_ESTOP;
+      else if(Switches[SWITCH_A]==0)
+        NextState = STATE_AUTONOMOUS;
+      else
+        NextState = STATE_RC;
+    }
+    RCEStop = false;
+    if (State == STATE_RC){    //only continue on if in RC state
+      forwardPercent = map(ForwardPulse, RCMin, RCMax, -1, 1);
+      angularPercent = map(AngularPulse, RCMin, RCMax, -1, 1);
+      ConvertRCToMotorSpeeds(forwardPercent, angularPercent);
+    }
   }
   return;
 }
@@ -240,71 +254,117 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
   //read the values of all switches
   void ReadSwitches()
   {
-    PreviousEStop = Switches[SWITCH_ESTOP];   //for state change purposes, so we can tell if the EStop is changing states
+    //State = NextState;
+    //HardEStop = NextHardEStop;
     Switches[SWITCH_A] = digitalRead(SWITCHAPIN);
     Switches[SWITCH_B] = digitalRead(SWITCHBPIN);
     Switches[SWITCH_C] = digitalRead(SWITCHCPIN);
     Switches[SWITCH_D] = digitalRead(SWITCHDPIN);
     Switches[SWITCH_ESTOP] = digitalRead(ESTOPPIN);
-    if (Switches[SWITCH_ESTOP] == 0 || (State == STATE_ESTOP && Switches[SWITCH_ESTOP] == PreviousEStop)) { //EStop is active low; stay in EStop state if either the button is down or it's not changed and robot is already in estop state
+    
+    if(Switches[SWITCH_ESTOP]== 0){
       State = STATE_ESTOP;
       digitalWrite(SOFTWAREENABLEPIN, 0); //output low when in EStop State
     }
-    else if(Switches[SWITCH_ESTOP] == 1 && PreviousEStop == 0){ //the EStop button has just been lifted
+    else{
+      State = NextState;
       digitalWrite(SOFTWAREENABLEPIN, 1); //output high when not in EStop State
-      if(Switches[SWITCH_A] == 0)
-        State = STATE_AUTONOMOUS;
-      else
-        State = STATE_RC;
     }
+    /*if (State==STATE_ESTOP || Switches[SWITCH_ESTOP]==0) { //All the EStop scenarios
+      if(Switches[SWITCH_ESTOP]==0){  //The button's pressed, hard EStop regardless
+        NextState = STATE_ESTOP;
+        NextHardEStop = true;
+        digitalWrite(SOFTWAREENABLEPIN, 1); //output high when in EStop State
+      }
+      else if(HardEStop==true && Switches[SWITCH_ESTOP]==1 && RCEStop == false){  //the button's just been let up after being in hard EStop, and RC EStop isn't on
+        digitalWrite(SOFTWAREENABLEPIN, 0); //output low when not in EStop State
+        NextHardEStop = false;
+        if(Switches[SWITCH_A] == 0)
+          NextState = STATE_AUTONOMOUS;
+        else
+          NextState = STATE_RC;
+      }
+      else{ //no change, stay in soft EStop
+        NextState = STATE_ESTOP;
+        NextHardEStop = false;
+        digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+      }
+    }
+    else if((State==STATE_RC && Switches[SWITCH_A]==0)||(State==STATE_AUTONOMOUS && Switches[SWITCH_A]==1)){   //if Switch A has been flipped (0 = autonomous, 1 = RC), put in soft EStop
+        NextState = STATE_ESTOP;
+        NextHardEStop = false;
+        digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+    }
+    else //no change
+      NextState = State;  
+      */
     return;
   }
 
-  /*void SabertoothMotorCommandLoop()
+  void SabertoothMotorCommandLoop()
     {
+      byte addressByte;
+      byte leftCommandByte;
+      byte leftDataByte;
+      byte leftChecksumByte;
+      byte rightCommandByte;
+      byte rightDataByte;
+      byte rightChecksumByte;
+      
     MotorCommandLastSent = millis();
-
-    //If robot is estopped, send a braking command to the motor controller as a secondary safety stop
-    if (State == STATE_ESTOP)  //active low
+    
+  
+    //If robot is estopped, set the speed to 0 for outputting
+    if (State == STATE_ESTOP)
     {
       MotorSpeeds[LEFTSPEED] = B00000000;
       MotorSpeeds[RIGHTSPEED] = B00000000;
-      return;
+      
     }
 
-    //Motor Control Code
-    // send packet to left motor
-    if (MotorSpeeds[LEFTSPEED] <= 127 && State != STATE_ESTOP)
-    {
-      LeftChecksum = (SabertoothAddress + MotorSpeeds[LEFTDIRECTION] + MotorSpeeds[LEFTSPEED]);
-      Serial1.write(SabertoothAddress);
-      Serial1.write(MotorSpeeds[LEFTDIRECTION]);
-      Serial1.write(MotorSpeeds[LEFTSPEED]);
-      Serial1.write(LeftChecksum & SabertoothMask);
-    }
+    //We're using the packetized serial mode to interface with the Sabertooth controller
+    //This is a four byte packet:
+    //byte 1: address of the controller, set by DIP switches 4, 5 and 6 on the controller
+    addressByte = SabertoothAddress;
+    //byte 2: the command, relevant ones here are 0 = motor 1 forward, 1 = motor 1 backwards, 4 = motor 2 forward, 5 = motor 2 backwards, they've already been encoded
+    leftCommandByte = MotorSpeeds[LEFTDIRECTION];
+    rightCommandByte = MotorSpeeds[RIGHTDIRECTION];
+    //byte 3: the data, a speed from 0 - 127
+    leftDataByte = MotorSpeeds[LEFTSPEED];
+    rightDataByte = MotorSpeeds[RIGHTSPEED];
+    //byte 4: the checksum, the sum of the previous 3 bytes, and ANDed with the mask 01111111b 
+    leftChecksumByte = (addressByte + leftCommandByte + leftDataByte) & SabertoothMask;
+    rightChecksumByte = (addressByte + rightCommandByte + rightDataByte) & SabertoothMask;
 
-    // send packet to right motor
-    if (MotorSpeeds[RIGHTSPEED] <= 127 && State != STATE_ESTOP)
-    {
-      RightChecksum = (SabertoothAddress + MotorSpeeds[RIGHTDIRECTION] + MotorSpeeds[RIGHTSPEED]);
-      Serial1.write(SabertoothAddress);
-      Serial1.write(MotorSpeeds[RIGHTDIRECTION]);
-      Serial1.write(MotorSpeeds[RIGHTSPEED]);
-      Serial1.write(RightChecksum & SabertoothMask);
-    }
+    //output our packets, starting with left
+    Serial1.write(addressByte);
+    Serial1.write(leftCommandByte);
+    Serial1.write(leftDataByte);
+    Serial1.write(leftChecksumByte);
+    //right packet
+    Serial1.write(addressByte);
+    Serial1.write(rightCommandByte);
+    Serial1.write(rightDataByte);
+    Serial1.write(rightChecksumByte);
     return;
     }
-  */
+    
   //the state changes are all handled in the switch read function, so we use this to take the appropriate action
   void ControlLoop()
   {
     ControlLoopLastTime = millis(); // time the interval of ControlLoop running
     switch(State){
       case STATE_ESTOP:
-        //maybe we need some data flushing to the motor controller
+        //set the next state to the switch positions if in hard estop
+        if(Switches[SWITCH_ESTOP]==0){
+          if(Switches[SWITCH_A]==0) //low - autonomous enable
+            NextState = STATE_AUTONOMOUS;
+          else
+            NextState = STATE_RC;
+        }
         break;
       case STATE_RC:
-        RCControl();
+        //nothing here now that we moved the RC control to the main loop
       case STATE_AUTONOMOUS:
         //autonomous code
         break;
@@ -352,6 +412,8 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
     //put debug info here
     OutputString = "State: " + String(State);
     DebugOutput(OutputString, 0, true, false);
+    OutputString = "Switches (A, B, C, D, ESTOP): " + String(Switches[SWITCH_A]) + ", " + String(Switches[SWITCH_B]) + ", " + String(Switches[SWITCH_C]) + ", " + String(Switches[SWITCH_D]) + ", " + String(Switches[SWITCH_ESTOP]);
+    DebugOutput(OutputString, 0, true, false);
     if(State==STATE_RC){
       OutputString = "Forward Pulse: " + String(RCPulseData[FWDPULSEDATA]);
       DebugOutput(OutputString, 0, true, false);
@@ -360,7 +422,7 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
       OutputString = "EStop Pulse: " + String(RCPulseData[ESTOPPULSEDATA]);
       DebugOutput(OutputString, 0, true, false);
     }
-    OutputString = "Left wheel speed: " + String(MotorSpeeds[LEFTSPEED]);
+    /*OutputString = "Left wheel speed: " + String(MotorSpeeds[LEFTSPEED]);
     DebugOutput(OutputString, 0, true, false);
     OutputString = "Left wheel direction: " + String(MotorSpeeds[LEFTDIRECTION]);
     DebugOutput(OutputString, 0, true, false);
@@ -370,7 +432,7 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
     DebugOutput(OutputString, 0, true, false);
     OutputString = "Switches (A, B, C, D, ESTOP): " + String(Switches[SWITCH_A]) + ", " + String(Switches[SWITCH_B]) + ", " + String(Switches[SWITCH_C]) + ", " + String(Switches[SWITCH_D]) + ", " + String(Switches[SWITCH_ESTOP]);
     DebugOutput(OutputString, 0, true, false);
-
+*/
     return;
   }
 
@@ -431,12 +493,14 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
 
     //initialize in the EStop state, no action until the physical estop is cycled
     State = STATE_ESTOP;
+    NextState = STATE_ESTOP;
+    RCEStop = false;
     //Delay 10 seconds to allow for initialization of other components
     //Temp set to 2 seconds for testing
     delay(2000);
     //run all of the various sub-functions and establish an initial run time
     ControlLoop();
-    //SabertoothMotorCommandLoop();
+    SabertoothMotorCommandLoop();
     ReadSwitches();
 
     return;
@@ -444,23 +508,25 @@ void ConvertRCToMotorSpeeds(uint32_t forwardPercent, uint32_t angularPercent) {
 
   //main loop
   void loop() {
+    //To keep checking for whether the RC EStop is on
+    long currentTime = millis();
+    RCControl();
     // check to see if enough time has passed to run the control loop
-    if ((millis() - ControlLoopLastTime) >= CONTROLLOOPRATE)
+    if ((currentTime - ControlLoopLastTime) >= CONTROLLOOPRATE)
     {
       ControlLoop();
     }
 
     // check to see if enough time has passed to run motor command loop and if the robot is in
-    if ((millis() - MotorCommandLastSent) >= SABERTOOTHLOOPRATE )
+    if ((currentTime - MotorCommandLastSent) >= SABERTOOTHLOOPRATE )
     {
-      //SabertoothMotorCommandLoop();
+      SabertoothMotorCommandLoop();
     }
     // If switch C is enabled the robot is in debug mode; dump output to console
-    /*if ((Switches[SWITCH_C] == 0) && (millis() - LastDebug) >= DEBUGOUTPUTRATE)
+    if (currentTime - LastDebug >= DEBUGOUTPUTRATE)  //add switch c check
       {
        DebugPrint();
-      }*/
-    DebugPrint();
+      }
 
     return;
   }
