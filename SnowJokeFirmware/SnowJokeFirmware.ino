@@ -122,6 +122,17 @@ void EStopPulse() {
   else {
     RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
     //Serial.println("estop pulse off");
+      //if EStop Pulse > 1300, disable the software enable output
+  if (EStopPulse > EStopThreshold) {
+    State = STATE_ESTOP;
+    NextState = STATE_ESTOP;
+    digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+    RCEStop = true;
+    MotorSpeeds[LEFTSPEED] = 0;
+    MotorSpeeds[RIGHTSPEED] = 0;
+    MotorSpeeds[LEFTDIRECTION] = 0;
+    MotorSpeeds[RIGHTDIRECTION] = 0;
+  }
   }
   return;
 }
