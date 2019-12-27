@@ -158,7 +158,7 @@ void EStopPulse() {
     RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
     //Serial.println("estop pulse off");
     //if EStop Pulse > 1300, disable the software enable output
-    if (EStopPulse > EStopThreshold) {
+    if (RCTempPulseData[ESTOPPULSEDATA] > EStopThreshold) {
       State = STATE_ESTOP;
       NextState = STATE_ESTOP;
       digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
