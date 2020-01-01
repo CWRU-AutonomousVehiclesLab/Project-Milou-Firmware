@@ -101,3 +101,25 @@ float AutonomousAngularVelocity;
 float AutonomousTestTiming = 0;
 float AutonomousTestAccumulator = 0;
 //Channel-specific functions to calculate the PWM signal length
+
+
+
+//!====================RC====================
+//positions for pin PWM data in the RCPulseData array
+#define FWDPULSEDATA 0
+#define ANGPULSEDATA 1
+#define ESTOPPULSEDATA 2
+
+//holds the temporary start of signal data, for use in timing the PWM width of the RC input signals
+uint32_t RCStartPulse[RCNUMBEROFCHANNELS];
+//holds data from the RC PWM inputs
+uint32_t RCTempPulseData[RCNUMBEROFCHANNELS];
+//more permenant pulse data copied over from RCTempPulseData
+uint32_t RCPulseData[RCNUMBEROFCHANNELS];
+
+//constants relating to the RC functioning
+uint32_t RCCenter = 1500;
+uint32_t RCMax = 2300;
+uint32_t RCMin = 700;
+uint32_t RCTimeout = 1930000;
+uint32_t EStopThreshold = 1300;
