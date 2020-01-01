@@ -23,7 +23,7 @@ void AngPulse() {
 void EStopPulse() {
   if (digitalRead(ESTOPPULSEPIN)) {
     RCStartPulse[ESTOPPULSEDATA] = micros();
-    //Serial.println("estop pulse on");
+    digitalWrite(SOFTWAREENABLEPIN, 0); //output high  when not in EStop State
   }
   else {
     RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];

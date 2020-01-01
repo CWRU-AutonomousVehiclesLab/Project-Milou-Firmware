@@ -19,6 +19,4 @@ void loop() {
   {
     DebugPrint();
   }
-
-  return;
 }
