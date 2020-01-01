@@ -5,6 +5,8 @@ void setup() {
   Serial1.begin(38400);
   //serial communication with the console for debug purposes
   Serial.begin(38400);
+
+  
   //Setting initial values for the motor speed both pre and post PID
   DesiredSpeeds[LEFTSPEED] = B00000000;      // set Motor 1 speed to 0 to start
   DesiredSpeeds[RIGHTSPEED] = B00000000;     // set Motor 2 speed to 0 to start

@@ -1,3 +1,48 @@
+//!=====================Interupt Callback=====================
+//Channel-specific functions to calculate the PWM signal length
+void FwdPulse() {
+  if (digitalRead(FWDPULSEPIN)) {
+    RCStartPulse[FWDPULSEDATA] = micros();
+  }
+  else {
+    RCTempPulseData[FWDPULSEDATA] = micros() - RCStartPulse[FWDPULSEDATA];
+  }
+  return;
+}
+
+void AngPulse() {
+  if (digitalRead(ANGPULSEPIN)) {
+    RCStartPulse[ANGPULSEDATA] = micros();
+  }
+  else {
+    RCTempPulseData[ANGPULSEDATA] = micros() - RCStartPulse[ANGPULSEDATA];
+  }
+  return;
+}
+
+void EStopPulse() {
+  if (digitalRead(ESTOPPULSEPIN)) {
+    RCStartPulse[ESTOPPULSEDATA] = micros();
+    //Serial.println("estop pulse on");
+  }
+  else {
+    RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
+    //Serial.println("estop pulse off");
+    //if EStop Pulse > 1300, disable the software enable output
+    if (RCTempPulseData[ESTOPPULSEDATA] > EStopThreshold) {
+      State = STATE_ESTOP;
+      NextState = STATE_ESTOP;
+      digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+      RCEStop = true;
+      DesiredSpeeds[LEFTSPEED] = 0;
+      DesiredSpeeds[RIGHTSPEED] = 0;
+      DesiredSpeeds[LEFTDIRECTION] = 0;
+      DesiredSpeeds[RIGHTDIRECTION] = 0;
+    }
+  }
+  return;
+}
+//!=====================Loop Call=====================
 //Copies over the entire temp array to a more permanant one before accessing so an interrupt won't change values while it's being accessed
 void GetRCData() {
   noInterrupts(); //pauses interrupts while reading data
