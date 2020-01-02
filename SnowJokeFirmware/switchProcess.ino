@@ -11,11 +11,9 @@ void ReadSwitches()
 
   if (Switches[SWITCH_ESTOP] == 0) {
     State = STATE_ESTOP;
-    digitalWrite(SOFTWAREENABLEPIN, 0); //output low when in EStop State
   }
   else {
     State = NextState;
-    digitalWrite(SOFTWAREENABLEPIN, 1); //output high when not in EStop State
   }
   return;
 }
