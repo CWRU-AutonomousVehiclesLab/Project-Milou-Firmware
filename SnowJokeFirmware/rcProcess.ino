@@ -42,6 +42,7 @@ void EStopPulse() {
   }
   return;
 }
+
 //!=====================Loop Call=====================
 //Copies over the entire temp array to a more permanant one before accessing so an interrupt won't change values while it's being accessed
 void GetRCData() {
