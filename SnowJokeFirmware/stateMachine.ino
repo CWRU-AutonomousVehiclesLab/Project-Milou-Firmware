@@ -7,19 +7,23 @@ void ControlLoop()
       //set the next state to the switch positions if in hard estop
       if (Switches[SWITCH_ESTOP] == 0) {
         if (Switches[SWITCH_A] == 0) //low - autonomous enable
-          NextState = STATE_AUTONOMOUS;
-        else
           NextState = STATE_RC;
+        else
+          NextState = STATE_AUTONOMOUS;
       }
       break;
     case STATE_RC:
-    //nothing here now that we moved the RC control to the main loop
+      // Populate RC Speed.
+      rcPopulateSpeed();
+      break;
+
     case STATE_AUTONOMOUS:
-      //for demoing the PID
-      /*
-       Desired
-       */
+      autonomousPopulateSpeed();
       break;
   }
   return;
+}
+
+void checkStateChange(){
+  readSwitches();
 }

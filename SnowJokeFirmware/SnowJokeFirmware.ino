@@ -10,6 +10,10 @@
 #define SWITCHBPIN 8
 #define SWITCHCPIN 9
 #define SWITCHDPIN 10
+//? RGB Addressable LED
+#define LED_R 21
+#define LED_G 22
+#define LED_B 23
 //? Estop Signal From Estop Board
 #define ESTOPPIN 11 //Singal from board
 #define SOFTWAREENABLEPIN 16 //Signal to board
@@ -20,6 +24,10 @@
 #define LEFTENCODERPIN 17
 #define RIGHTENCODERPIN 18
 
+
+//!====================Serial Code Name====================
+#define terminalSerial Serial
+#define sabertoothSerial Serial1
 
 //!====================Switches====================
 //positions for physical switch data in the Switches array
@@ -43,14 +51,21 @@ boolean Switches[6];
 //for communicating with the Sabertooth controller
 int SabertoothAddress = B10000010;        // set Address to 130
 int SabertoothMask = B01111111;
+int Checksum0 = B00000000;                                         // set
+int LeftMotorDirection = B00000001;                                     // set Motor 1 backwards
+int LeftMotorSpeed = B00000000;                                         // set Motor 1 speed to 0 to start
+int RightMotorDirection = B00000100;                                     // set Motor 2 forwards
+int RightMotorSpeed = B00000000;                                         // set Motor 2 speed to 0 to start
+int Checksum1 = (SabertoothAddress + LeftMotorDirection + LeftMotorSpeed); // Check other Motor 1 commands against this
+int Checksum2 = (SabertoothAddress + RightMotorDirection + RightMotorSpeed); // Check other Motor 2 commands against this
 
 
 //!====================State Machine====================
 #define STATE_ESTOP 0
 #define STATE_RC 1
 #define STATE_AUTONOMOUS 2
-//State variables
-int State;
+// Global variable for storing the robot state. All writable
+int State; 
 int NextState;
 bool RCEStop;
 
@@ -90,6 +105,9 @@ uint32_t RCMin = 700;
 uint32_t RCTimeout = 1930000;
 uint32_t EStopThreshold = 1300;
 
+// Global Output
+long forwardPercent;
+long angularPercent;
 //!====================Inverse Kinematics====================
 //kinematics calculations from old code
 //uint32_t MaxRCDesiredTicksPerSecond = 51330; //(2 m/s) * (1 rev/0.957557m) * (24 motor rev/wheel rev) * (1024 ticks/motor rev)

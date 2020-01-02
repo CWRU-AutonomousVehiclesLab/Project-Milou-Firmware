@@ -1,7 +1,15 @@
+void activateESTOP(){
+    digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
+    DesiredSpeeds[LEFTSPEED] = 0;
+    DesiredSpeeds[RIGHTSPEED] = 0;
+    DesiredSpeeds[LEFTDIRECTION] = 0;
+    DesiredSpeeds[RIGHTDIRECTION] = 0;
+
+}
 
 void SabertoothMotorCommandLoop()
 {
-  //! TODO - now that the PID is in place Motor Speeds could possibly be given a value higher than 127, impose a cap of some sort
+  //TODO - now that the PID is in place Motor Speeds could possibly be given a value higher than 127, impose a cap of some sort
   byte addressByte;
   byte leftCommandByte;
   byte leftDataByte;
@@ -40,15 +48,15 @@ void SabertoothMotorCommandLoop()
   rightChecksumByte = (addressByte + rightCommandByte + rightDataByte) & SabertoothMask;
 
   //output our packets, starting with left
-  Serial1.write(addressByte);
-  Serial1.write(leftCommandByte);
-  Serial1.write(leftDataByte);
-  Serial1.write(leftChecksumByte);
+  sabertoothSerial.write(addressByte);
+  sabertoothSerial.write(leftCommandByte);
+  sabertoothSerial.write(leftDataByte);
+  sabertoothSerial.write(leftChecksumByte);
   //right packet
-  Serial1.write(addressByte);
-  Serial1.write(rightCommandByte);
-  Serial1.write(rightDataByte);
-  Serial1.write(rightChecksumByte);
+  sabertoothSerial.write(addressByte);
+  sabertoothSerial.write(rightCommandByte);
+  sabertoothSerial.write(rightDataByte);
+  sabertoothSerial.write(rightChecksumByte);
   return;
 }
 

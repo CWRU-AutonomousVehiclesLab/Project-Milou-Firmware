@@ -2,11 +2,12 @@ void setup() {
   //!====================Serial Setup====================
   //serial communication with the motor controller on pins 0/1
   // set baud rate to 38400 using the hardware DIP switches as per Sabertooth documentation
-  //? Sabertooth Serial
-  Serial1.begin(38400);
-  //? PC Serial
-  Serial.begin(38400);
 
+  //? Sabertooth Serial
+  sabertoothSerial.begin(9600);
+  //? PC Serial
+  terminalSerial.begin(38400);
+  
   //!====================Speed Init====================
   //Setting initial values for the motor speed both pre and post PID
   DesiredSpeeds[LEFTSPEED] = B00000000;      // set Motor 1 speed to 0 to start
@@ -33,7 +34,11 @@ void setup() {
   //? software enable pin
   pinMode(SOFTWAREENABLEPIN, OUTPUT); // set up pin for software enable as an output
   //? Estop Observer
-  pinMode(ESTOPPIN, INPUT);
+  pinMode(ESTOPPIN, INPUT_PULLUP);
+  //? LED Indicator
+  pinMode(LED_R,OUTPUT);
+  pinMode(LED_G,OUTPUT);
+  pinMode(LED_B,OUTPUT);
 
   //!====================Interrupt Setup====================
   //? RC Pins (HIGH LOW Interrupt)
@@ -44,25 +49,25 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(LEFTENCODERPIN), LeftEncoderPulse, RISING);
   attachInterrupt(digitalPinToInterrupt(RIGHTENCODERPIN), RightEncoderPulse, RISING);
   //? Switch State
-  attachInterrupt(digitalPinToInterrupt(SWITCHAPIN), ReadSwitches, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(SWITCHBPIN), ReadSwitches, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(SWITCHCPIN), ReadSwitches, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(SWITCHDPIN), ReadSwitches, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ESTOPPIN), ReadSwitches, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(SWITCHAPIN), readSwitches, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(SWITCHBPIN), readSwitches, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(SWITCHCPIN), readSwitches, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(SWITCHDPIN), readSwitches, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ESTOPPIN), readSwitches, CHANGE);
 
   //!====================Sabertootn Initial Flush====================
   //some serial setup stuff.  take a closer look at the values he's passing in at some point
-  Serial1.write(SabertoothAddress);
-  Serial1.write(B00001111);
-  Serial1.write(B00000010);
-  int Checksum0 = (SabertoothAddress + B00000010 + B00001111);
-  Serial1.write(Checksum0 & SabertoothMask);
+  sabertoothSerial.write(SabertoothAddress);
+  sabertoothSerial.write(B00001111);
+  sabertoothSerial.write(B00000010);
+  Checksum0 = (SabertoothAddress + B00000010 + B00001111);
+  sabertoothSerial.write(Checksum0 & SabertoothMask);
   // set timeout to 200ms
-  Serial1.write(SabertoothAddress);
-  Serial1.write(B00001110);
-  Serial1.write(B00000010);
+  sabertoothSerial.write(SabertoothAddress);
+  sabertoothSerial.write(B00001110);
+  sabertoothSerial.write(B00000010);
   Checksum0 = (SabertoothAddress + B00000010 + B00001110);
-  Serial1.write(Checksum0 & SabertoothMask);
+  sabertoothSerial.write(Checksum0 & SabertoothMask);
 
   //!====================State initialization====================
   //initialize in the EStop state, no action until the physical estop is cycled
@@ -76,7 +81,8 @@ void setup() {
 
   //!====================Initial read State====================
   //run all of the various sub-functions and establish an initial run time
+  digitalWrite(SOFTWAREENABLEPIN, HIGH); // All set indicator, enable motor
   ControlLoop();
   SabertoothMotorCommandLoop();
-  ReadSwitches();
+  readSwitches();
 }
