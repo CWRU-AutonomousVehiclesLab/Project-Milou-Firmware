@@ -30,7 +30,7 @@ void DebugOutput(String outputString, int level, bool debug=true, bool minimal=f
   return;
 }
 
-void debugOutput(){
+void debugDump(){
   terminalSerial.println("========================================");
   String debugString;
   

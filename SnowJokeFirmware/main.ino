@@ -35,7 +35,7 @@ void loop() {
     if ((currentTime - LastDebug) >= (DEBUGOUTPUTRATE*2)){
       DebugOutput("Debug display Loop Out of Sync. Delayed 2 Times!",4);
     }
-    debugOutput();
+    debugDump();
   }
 
 
