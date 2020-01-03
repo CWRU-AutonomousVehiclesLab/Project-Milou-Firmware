@@ -2,3 +2,6 @@
 
 2. Check the maximum pulse, minimal pulse, pulse center. Calibrate estop pulse.
 
+3. Activate Estop need to write the Estop command.
+
+4. set sabertooth to faster communication standard.
