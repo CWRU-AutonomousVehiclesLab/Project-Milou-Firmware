@@ -130,6 +130,8 @@ float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 uint32_t EncoderStartPulse[2];
 uint32_t EncoderPulseData[2];
 
+float obsLeftMotorSpeed;
+float obsRightMotorSpeed;
 
 //!====================PID motor level====================
 //PID Gain Constants
@@ -164,3 +166,15 @@ float desRightMotorSpeed;
 //? What is PID say?
 float pidedLeftMotorSpeed;
 float pidedRightMotorSpeed;
+//? Encoder reading?
+float obsLinearVelocity;
+float obsAngularVelocity;
+
+
+//!====================Kinematics Calibration Profile====================
+float l_motorConstant = 1;
+float r_motorConstant = 1;
+
+float motorGain = 1.0;
+float trim = 0.0;
+
