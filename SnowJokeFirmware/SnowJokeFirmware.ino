@@ -102,10 +102,10 @@ uint32_t RCTempPulseData[RCNUMBEROFCHANNELS];
 //more permenant pulse data copied over from RCTempPulseData
 uint32_t RCPulseData[RCNUMBEROFCHANNELS];
 //constants relating to the RC functioning
-uint32_t RCCenter = 1500;
-uint32_t RCMax = 2300;
-uint32_t RCMin = 700;
-uint32_t EStopThreshold = 1300;
+int RCCenter = 1500;
+int RCMax = 2300;
+int RCMin = 700;
+int EStopThreshold = 1300;
 
 
 //!====================Inverse Kinematics====================
@@ -176,5 +176,5 @@ float l_motorConstant = 1;
 float r_motorConstant = 1;
 
 float motorGain = 1.0;
-float trim = 0.0;
+float motorTrim = 0.0;
 

@@ -54,7 +54,7 @@ void Auto_IK(uint32_t forwardPercent, uint32_t angularPercent) {
 //Refering math to: http://robotsforroboticists.com/drive-kinematics/
 //! Units are all in meters and rad
 //! Vehicle Center is assumed at center of mass.
-void ik(uint32_t linearVelocity,uint32_t angularVelocity){
+void ik(float linearVelocity,float angularVelocity){
   /*
   # trim the desired commands such that they are within the limits:
         msg_car_cmd.v = self.trim(msg_car_cmd.v,
@@ -83,13 +83,17 @@ void ik(uint32_t linearVelocity,uint32_t angularVelocity){
         u_r_limited = self.trim(u_r, -self.parameters['~limit'], self.parameters['~limit'])
         u_l_limited = self.trim(u_l, -self.parameters['~limit'], self.parameters['~limit'])
   */
+  k_r = (motorGain + motorTrim)/r_motorConstant;
+  k_l = (motorGain - motorTrim)/l_motorConstant;
 
+  float LeftMotorSpeed = (linearVelocity - angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
+  float RightMotorSpeed = (linearVelocity + angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
 
-  desLeftMotorSpeed = (linearVelocity - angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
-  desRightMotorSpeed = (linearVelocity + angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
+  float desLeftMotorSpeed = LeftMotorSpeed * k_l;
+  float desRightMotorSpeed = RightMotorSpeed * k_r;
   }
 
-void fk(uint32_t leftMotorSpeed,uint32_t rightMotorSpeed){
+void fk(float leftMotorSpeed,float rightMotorSpeed){
 /*
        # FORWARD KINEMATICS PART
 
@@ -101,7 +105,13 @@ void fk(uint32_t leftMotorSpeed,uint32_t rightMotorSpeed){
         v = (self.parameters['~radius'] * omega_r + self.parameters['~radius'] * omega_l) / 2.0
         omega = (self.parameters['~radius'] * omega_r - self.parameters['~radius'] * omega_l) / \
                 self.parameters['~baseline']
-*/
+*/  
+    k_r = (motorGain + motorTrim)/r_motorConstant;
+    k_l = (motorGain - motorTrim)/l_motorConstant;
+
+    leftMotorSpeed = leftMotorSpeed / k_l;
+    rightMotorSpeed = rightMotorSpeed / k_r;
+
     obsLinearVelocity = (WheelDiameter * rightMotorSpeed +WheelDiameter * leftMotorSpeed) / 2.0;
     obsAngularVelocity =(WheelDiameter * rightMotorSpeed-WheelDiameter * leftMotorSpeed) / WheelSpacing;
 
