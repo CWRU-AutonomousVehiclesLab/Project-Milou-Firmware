@@ -178,3 +178,5 @@ float r_motorConstant = 1;
 float motorGain = 1.0;
 float motorTrim = 0.0;
 
+float k_r = (motorGain + motorTrim)/r_motorConstant;
+float k_l = (motorGain - motorTrim)/l_motorConstant;

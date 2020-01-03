@@ -83,9 +83,6 @@ void ik(float linearVelocity,float angularVelocity){
         u_r_limited = self.trim(u_r, -self.parameters['~limit'], self.parameters['~limit'])
         u_l_limited = self.trim(u_l, -self.parameters['~limit'], self.parameters['~limit'])
   */
-  k_r = (motorGain + motorTrim)/r_motorConstant;
-  k_l = (motorGain - motorTrim)/l_motorConstant;
-
   float LeftMotorSpeed = (linearVelocity - angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
   float RightMotorSpeed = (linearVelocity + angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
 
@@ -106,9 +103,6 @@ void fk(float leftMotorSpeed,float rightMotorSpeed){
         omega = (self.parameters['~radius'] * omega_r - self.parameters['~radius'] * omega_l) / \
                 self.parameters['~baseline']
 */  
-    k_r = (motorGain + motorTrim)/r_motorConstant;
-    k_l = (motorGain - motorTrim)/l_motorConstant;
-
     leftMotorSpeed = leftMotorSpeed / k_l;
     rightMotorSpeed = rightMotorSpeed / k_r;
 
