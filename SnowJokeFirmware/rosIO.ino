@@ -7,3 +7,8 @@
 //! 4. IMU interface
 
 //! 5. GPS interface
+
+void ROSPublish(){
+    ROSLastSent = millis();
+    return;
+}

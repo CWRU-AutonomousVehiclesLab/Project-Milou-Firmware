@@ -77,13 +77,16 @@ long LastDebug = 0;
 long ControlLoopLastTime = 0;
 //for timing of the Sabertooth controller output loop
 long MotorCommandLastSent = 0;
+//For Controlling last time published to ROS
+long ROSLastSent = 0;
 //milliseconds between outputting debug info (1 hz)
 #define DEBUGOUTPUTRATE 20
 //milliseconds between running the control loop (50 hz)
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz=20ms)
 #define SABERTOOTHLOOPRATE 20
-
+// Teensy as snesor interface, publish rate control (60HZ)
+#define ROSPUBLISHRATE 16.6667
 
 //!====================RC ONLY====================
 //total number of RC channels

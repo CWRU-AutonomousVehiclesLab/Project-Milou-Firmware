@@ -86,4 +86,5 @@ void setup() {
   writeSabertoothMC();
   readSwitches();
   GetRCData();
+  ROSPublish();
 }
