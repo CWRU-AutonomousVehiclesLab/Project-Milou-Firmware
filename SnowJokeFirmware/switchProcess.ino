@@ -1,7 +1,7 @@
 //read the values of all switches
 void readSwitches()
 {
-
+  //! The code here is final. DO not modify. 
   Switches[SWITCH_A] = digitalRead(SWITCHAPIN);
   Switches[SWITCH_B] = digitalRead(SWITCHBPIN);
   Switches[SWITCH_C] = digitalRead(SWITCHCPIN);

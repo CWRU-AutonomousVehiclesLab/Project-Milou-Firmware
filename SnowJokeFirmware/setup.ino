@@ -73,7 +73,7 @@ void setup() {
   //initialize in the EStop state, no action until the physical estop is cycled
   State = STATE_ESTOP;
   NextState = STATE_ESTOP;
-  RCEStop = false;
+  
 
   //!====================Setup Halt====================
   //Delay 5 seconds to allow for initialization of other components
@@ -83,6 +83,7 @@ void setup() {
   //run all of the various sub-functions and establish an initial run time
   digitalWrite(SOFTWAREENABLEPIN, HIGH); // All set indicator, enable motor
   ControlLoop();
-  SabertoothMotorCommandLoop();
+  writeSabertoothMC();
   readSwitches();
+  GetRCData();
 }

@@ -7,7 +7,7 @@ void activateESTOP(){
 
 }
 
-void SabertoothMotorCommandLoop()
+void writeSabertoothMC()
 {
   //TODO - now that the PID is in place Motor Speeds could possibly be given a value higher than 127, impose a cap of some sort
   byte addressByte;
