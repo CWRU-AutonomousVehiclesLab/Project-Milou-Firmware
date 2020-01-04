@@ -117,7 +117,6 @@ int EStopThreshold = 1500;
 //physical constants for calculating speeds
 float WheelSpacing = 0.77; //Wheel spacing (center to center) in meters; assumed from previous code, double check
 float MaxMotorRPM = 1;  //need this
-float MotorRevsPerWheelRev = 24;  //assumed from previous code, double check
 float WheelDiameter = 0.957557;   //assumed from previous code, double check
 float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 
@@ -126,6 +125,8 @@ float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 //encoder cycles per revolution of the wheel
 #define ENCODERCYCLES 256
 #define ENCODERTICKPERREV 1024
+#define MotorRevsPerWheelRev = 24;  //assumed from previous code, double check
+
 //constants for referencing values in the encoder structures
 #define LEFTENCODER 0
 #define RIGHTENCODER 1

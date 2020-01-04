@@ -17,8 +17,8 @@ void actualObsSpeed(){
     // Get time
     long currentTime =  millis();
     
-    obsLeftMotorSpeed = ((currentLeftPos-lastLeftPos)*1000.0/1024.0)/(currentTime-lastEncoderTime);
-    obsRightMotorSpeed = ((currentRightPos-lastRightPos)*1000.0/1024.0)/(currentTime-lastEncoderTime);
+    obsLeftMotorSpeed = ((currentLeftPos-lastLeftPos)*1000.0/(ENCODERTICKPERREV*MotorRevsPerWheelRev*WheelDiameter))/(currentTime-lastEncoderTime);
+    obsRightMotorSpeed = ((currentRightPos-lastRightPos)*1000.0/(ENCODERTICKPERREV*MotorRevsPerWheelRev*WheelDiameter))/(currentTime-lastEncoderTime);
 
     lastLeftPos = currentLeftPos;
     lastRightPos = currentRightPos;
