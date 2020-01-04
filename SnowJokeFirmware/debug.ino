@@ -31,17 +31,18 @@ void DebugOutput(String outputString, int level, bool debug=true, bool minimal=f
 }
 
 void debugDump(){
+  LastDebug = millis();
   terminalSerial.println("========================================");
   String debugString;
   
   //! State Check
   debugString = "  State is: "+String(State);
   DebugOutput(debugString,0);
-
+  //! Check RC Recieve
+  debugString = "  RC_SIG recieved is:  FWD: "+String(RCPulseData[FWDPULSEDATA])+"  ANG: "+String(RCPulseData[ANGPULSEDATA])+"  ESTOP: "+String(RCPulseData[ESTOPPULSEDATA]);
+  DebugOutput(debugString,0);
+  
   if (State == STATE_RC){
-    //! Check RC Recieve
-    debugString = "  RC_SIG recieved is:  FWD: "+String(RCPulseData[FWDPULSEDATA])+"  ANG: "+String(RCPulseData[ANGPULSEDATA])+"  ESTOP: "+String(RCPulseData[ESTOPPULSEDATA]);
-    DebugOutput(debugString,0);
     //! Check RC Interpretation
     debugString = "  RC_CMD is:  V: "+String(rcLinearSpeed)+"   W: "+String(rcAngularSpeed);
     DebugOutput(debugString,0);

@@ -86,8 +86,8 @@ void ik(float linearVelocity,float angularVelocity){
   float LeftMotorSpeed = (linearVelocity - angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
   float RightMotorSpeed = (linearVelocity + angularVelocity * WheelSpacing / 2.0)/WheelDiameter;
 
-  float desLeftMotorSpeed = LeftMotorSpeed * k_l;
-  float desRightMotorSpeed = RightMotorSpeed * k_r;
+  desLeftMotorSpeed = LeftMotorSpeed * k_l;
+  desRightMotorSpeed = RightMotorSpeed * k_r;
   }
 
 void fk(float leftMotorSpeed,float rightMotorSpeed){

@@ -10,9 +10,10 @@ void readSwitches()
 
   // ESTOP heard from the action board
   if (Switches[SWITCH_ESTOP] == 0) {
+    DebugOutput("Detected ESTOP Circuit Activated!",2);    
     State = STATE_ESTOP;
   }
-  else {
+  else {    
     State = NextState;
   }
 

@@ -1,7 +1,7 @@
 void rcPopulateSpeed(){
-    int ForwardPulse = RCPulseData[FWDPULSEDATA];
-    int AngularPulse = RCPulseData[ANGPULSEDATA];
-    rcLinearSpeed = map(ForwardPulse, RCMin, RCMax, -2.0, 2.0);
+    float ForwardPulse = RCPulseData[FWDPULSEDATA];
+    float AngularPulse = RCPulseData[ANGPULSEDATA];
+    rcLinearSpeed = map(ForwardPulse, RCMin, RCMax, -1.5, 1.5);
     rcAngularSpeed = map(AngularPulse, RCMin, RCMax, -1.0, 1.0);
 }
 

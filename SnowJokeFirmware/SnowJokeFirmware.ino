@@ -80,7 +80,7 @@ long MotorCommandLastSent = 0;
 //For Controlling last time published to ROS
 long ROSLastSent = 0;
 //milliseconds between outputting debug info (1 hz)
-#define DEBUGOUTPUTRATE 20
+#define DEBUGOUTPUTRATE 100
 //milliseconds between running the control loop (50 hz)
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz=20ms)
@@ -103,9 +103,9 @@ uint32_t RCTempPulseData[RCNUMBEROFCHANNELS];
 uint32_t RCPulseData[RCNUMBEROFCHANNELS];
 //constants relating to the RC functioning
 int RCCenter = 1500;
-int RCMax = 2300;
-int RCMin = 700;
-int EStopThreshold = 1300;
+int RCMax = 2000;
+int RCMin = 1000;
+int EStopThreshold = 1500;
 
 
 //!====================Inverse Kinematics====================
@@ -172,8 +172,8 @@ float obsAngularVelocity;
 
 
 //!====================Kinematics Calibration Profile====================
-float l_motorConstant = 1;
-float r_motorConstant = 1;
+float l_motorConstant = 1.0;
+float r_motorConstant = 1.0;
 
 float motorGain = 1.0;
 float motorTrim = 0.0;
