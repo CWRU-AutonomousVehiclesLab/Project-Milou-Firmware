@@ -58,3 +58,39 @@ void writeSabertoothMC()
   */
 }
 
+/*
+  MotorCommandLastSent = millis();
+  
+  //If robot is estopped, send a braking command to the motor controller as a secondary safety stop
+  if (Estopstatus == false)
+  {
+    LeftMotorSpeed = 0;
+    RightMotorSpeed = 0;
+    //When E-stopped, set PID error variables to 0 to wipe accumulated error to prevent sudden acceleration on start
+    left_speed_error = 0;
+    left_speed_error_old = 0;
+    left_speed_error_sum = 0;
+    right_speed_error = 0;
+    right_speed_error_old = 0;
+    right_speed_error_sum = 0;
+  }
+ 
+ //Motor Control Code  
+// send packet to motor 1
+  if (LeftMotorSpeed <= 127){
+    Checksum1 = (SabertoothAddress + LeftMotorDirection + LeftMotorSpeed);
+    SabertoothSerial.write(SabertoothAddress);
+    SabertoothSerial.write(LeftMotorDirection);
+    SabertoothSerial.write(LeftMotorSpeed);
+    SabertoothSerial.write(Checksum1 & Mask);
+  }
+
+// send packet to motor 2
+  if (RightMotorSpeed <= 127){
+  Checksum2 = (SabertoothAddress + RightMotorDirection + RightMotorSpeed);
+  SabertoothSerial.write(SabertoothAddress);
+  SabertoothSerial.write(RightMotorDirection);
+  SabertoothSerial.write(RightMotorSpeed);
+  SabertoothSerial.write(Checksum2 & Mask);
+  }
+*/
