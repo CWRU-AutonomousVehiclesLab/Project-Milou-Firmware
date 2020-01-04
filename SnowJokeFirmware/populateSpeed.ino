@@ -8,3 +8,19 @@ void rcPopulateSpeed(){
 void autoPopulateSpeed(){
     return;
 }
+
+void actualObsSpeed(){
+    // Get the position first
+    long currentLeftPos = leftEncoderPos;
+    long currentRightPos = rightEncoderPos;
+
+    // Get time
+    long currentTime =  millis();
+    
+    obsLeftMotorSpeed = ((currentLeftPos-lastLeftPos)*1000.0/1024.0)/(currentTime-lastEncoderTime)*60;
+    obsRightMotorSpeed = ((currentRightPos-lastRightPos)*1000.0/1024.0)/(currentTime-lastEncoderTime)*60;
+
+    lastLeftPos = currentLeftPos;
+    lastRightPos = currentRightPos;
+    lastEncoderTime = currentTime;
+}

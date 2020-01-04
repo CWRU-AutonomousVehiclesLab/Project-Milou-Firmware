@@ -1,6 +1,7 @@
 //take the desired speed calculated so far, use PID functions to calculate the actual speed
 void PID()
 {
+  /*
   //get time 
   float currentTime = millis();  
   float timeElapsed = currentTime-PIDLastTime;
@@ -35,5 +36,5 @@ void PID()
   MotorSpeeds[RIGHTSPEED] = KP*PIDError[RIGHTSPEED] + KI*PIDIntegralError[RIGHTSPEED] + KD*PIDDerivativeError[RIGHTSPEED];
   
   PIDLastTime = currentTime;
-
+  */
 }

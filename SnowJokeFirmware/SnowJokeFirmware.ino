@@ -21,8 +21,10 @@
 #define SABERTOOTHPINRX 0
 #define SABERTOOTHPINTX 1
 //? Encoder
-#define LEFTENCODERPIN 17
-#define RIGHTENCODERPIN 18
+#define LEFTENCODER_A 17
+#define LEFTENCODER_B 18
+#define RIGHTENCODER_A 19
+#define RIGHTENCODER_B 20
 
 
 //!====================Serial Code Name====================
@@ -38,7 +40,7 @@
 #define SWITCH_D 3      //currently unused
 #define SWITCH_ESTOP 4  //Estop Control board treated as switch
 //for storing the states of the physical switches
-boolean Switches[6];
+volatile boolean Switches[6];
 
 
 //!====================Motor Controller====================
@@ -96,9 +98,9 @@ long ROSLastSent = 0;
 #define ANGPULSEDATA 1
 #define ESTOPPULSEDATA 2
 //holds the temporary start of signal data, for use in timing the PWM width of the RC input signals
-uint32_t RCStartPulse[RCNUMBEROFCHANNELS];
+volatile uint32_t RCStartPulse[RCNUMBEROFCHANNELS];
 //holds data from the RC PWM inputs
-uint32_t RCTempPulseData[RCNUMBEROFCHANNELS];
+volatile uint32_t RCTempPulseData[RCNUMBEROFCHANNELS];
 //more permenant pulse data copied over from RCTempPulseData
 uint32_t RCPulseData[RCNUMBEROFCHANNELS];
 //constants relating to the RC functioning
@@ -123,12 +125,23 @@ float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 //!====================Encoder====================
 //encoder cycles per revolution of the wheel
 #define ENCODERCYCLES 256
+#define ENCODERTICKPERREV 1024
 //constants for referencing values in the encoder structures
 #define LEFTENCODER 0
 #define RIGHTENCODER 1
-//data structures for calculating encoder cycles
-uint32_t EncoderStartPulse[2];
-uint32_t EncoderPulseData[2];
+
+volatile long leftEncoderPos = 0;
+volatile long rightEncoderPos = 0;
+
+volatile boolean leftAset = false;
+volatile boolean leftBset = false;
+volatile boolean rightAset = false;
+volatile boolean rightBset = false;
+
+
+long lastLeftPos = 0;
+long lastRightPos = 0;
+long lastEncoderTime = 0;
 
 float obsLeftMotorSpeed;
 float obsRightMotorSpeed;

@@ -55,5 +55,10 @@ void debugDump(){
   debugString = "  IK is:   Left: "+String(desLeftMotorSpeed)+"   R: "+String(desRightMotorSpeed);
   DebugOutput(debugString,0);
 
+  debugString = "  EncoderCount is:   Left: "+String(leftEncoderPos)+" Right: "+String(rightEncoderPos);
+  DebugOutput(debugString,0);
+
+  debugString = "  ActualSpeed is:   Left: "+String(obsLeftMotorSpeed)+" Right: "+String(obsRightMotorSpeed);
+  DebugOutput(debugString,0);
   return;
 }

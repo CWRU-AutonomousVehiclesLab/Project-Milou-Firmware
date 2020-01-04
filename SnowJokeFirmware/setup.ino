@@ -4,7 +4,7 @@ void setup() {
   // set baud rate to 38400 using the hardware DIP switches as per Sabertooth documentation
 
   //? Sabertooth Serial
-  sabertoothSerial.begin(9600);
+  sabertoothSerial.begin(38400);
   //? PC Serial
   terminalSerial.begin(38400);
   
@@ -39,6 +39,13 @@ void setup() {
   pinMode(LED_R,OUTPUT);
   pinMode(LED_G,OUTPUT);
   pinMode(LED_B,OUTPUT);
+  //? Encoder
+  pinMode(LEFTENCODER_A,INPUT);
+  pinMode(LEFTENCODER_B,INPUT);
+  pinMode(RIGHTENCODER_A,INPUT);
+  pinMode(RIGHTENCODER_B,INPUT);
+
+
 
   //!====================Interrupt Setup====================
   //? RC Pins (HIGH LOW Interrupt)
@@ -46,8 +53,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ANGPULSEPIN), AngPulse, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ESTOPPULSEPIN), EStopPulse, CHANGE);
   //? Encoders
-  attachInterrupt(digitalPinToInterrupt(LEFTENCODERPIN), LeftEncoderPulse, RISING);
-  attachInterrupt(digitalPinToInterrupt(RIGHTENCODERPIN), RightEncoderPulse, RISING);
+  attachInterrupt(digitalPinToInterrupt(LEFTENCODER_A), LeftEncoderA, CHANGE);  
+  attachInterrupt(digitalPinToInterrupt(LEFTENCODER_B), LeftEncoderB, CHANGE);  
+  attachInterrupt(digitalPinToInterrupt(RIGHTENCODER_A), RightEncoderA, CHANGE);  
+  attachInterrupt(digitalPinToInterrupt(RIGHTENCODER_B), RightEncoderB, CHANGE);  
+
   //? Switch State
   attachInterrupt(digitalPinToInterrupt(SWITCHAPIN), readSwitches, CHANGE);
   attachInterrupt(digitalPinToInterrupt(SWITCHBPIN), readSwitches, CHANGE);

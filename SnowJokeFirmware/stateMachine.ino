@@ -20,6 +20,7 @@ void ControlLoop()
       //! 2. calculate what that mean in Each wheel speeds
       ik(rcLinearSpeed,rcAngularSpeed); //This should populate desLeftMotorSpeed,DesRightMotorSpeed
       //! 3. PID smooth the desired left motor speed and right motor speed.
+      actualObsSpeed();
       PID(); //This should populate cmdLeftMotorSpeed,cmdRightMotorSpeed
       //! 4. eventually the command generated above will be observed by sabertooth writer and will write the robot.
 
@@ -30,6 +31,7 @@ void ControlLoop()
       //! 2. calculate what that mean in Each wheel speeds
       ik(autoLinearVelocity,autoAngularVelocity); //This should populate desLeftMotorSpeed,DesRightMotorSpeed
       //! 3. PID smooth the desired left motor speed and right motor speed.
+      actualObsSpeed();
       PID(); //This should populate cmdLeftMotorSpeed,cmdRightMotorSpeed
       //! 4. eventually the command generated above will be observed by sabertooth writer and will write the robot.      
       break;
