@@ -1,7 +1,3 @@
-1. Check in populateSpeed wheather the RC value obtained is rational or not. Evaluate if we can use float for the RCspeed instead of long.
-
-2. Check the maximum pulse, minimal pulse, pulse center. Calibrate estop pulse.
-
 3. Activate Estop need to write the Estop command.
 
-4. set sabertooth to faster communication standard.
+4. redo sabertooth rx into estop command

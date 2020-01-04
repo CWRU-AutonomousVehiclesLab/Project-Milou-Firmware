@@ -7,7 +7,7 @@ void setup() {
   sabertoothSerial.begin(38400);
   //? PC Serial
   terminalSerial.begin(38400);
-  
+  /*
   //!====================Speed Init====================
   //Setting initial values for the motor speed both pre and post PID
   DesiredSpeeds[LEFTSPEED] = B00000000;      // set Motor 1 speed to 0 to start
@@ -20,7 +20,7 @@ void setup() {
   MotorSpeeds[RIGHTSPEED] = B00000000;     // set Motor 2 speed to 0 to start
   MotorSpeeds[LEFTDIRECTION] = B00000001;  // set Motor 1 backwards
   MotorSpeeds[RIGHTDIRECTION] = B00000100; // set Motor 2 forwards
-  
+  */
   //!====================Pin Map====================
   //? RC
   pinMode(FWDPULSEPIN, INPUT_PULLUP);

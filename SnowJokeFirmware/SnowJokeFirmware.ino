@@ -123,9 +123,8 @@ float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 
 //!====================Encoder====================
 //encoder cycles per revolution of the wheel
-#define ENCODERCYCLES 256
-#define ENCODERTICKPERREV 1024
-#define MotorRevsPerWheelRev = 24;  //assumed from previous code, double check
+int ENCODERTICKPERREV=1024;
+int MotorRevsPerWheelRev=24;  //assumed from previous code, double check
 
 //constants for referencing values in the encoder structures
 #define LEFTENCODER 0
@@ -160,12 +159,6 @@ float PIDDerivativeError[2] = {0,0};
 float PIDPreviousError[2] = {0,0};
 //for timing of the PID
 long PIDLastTime = 0;
-
-//TODO Decrypted
-//for storing the motor speeds to be sent to the motor controller
-uint32_t DesiredSpeeds[4];
-//final speed after modification from the PID function with input from the encoder
-uint32_t MotorSpeeds[4];
 
 
 //!====================Global Velocity Control====================

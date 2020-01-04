@@ -1,14 +1,11 @@
 void activateESTOP(){
     digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
-    DesiredSpeeds[LEFTSPEED] = 0;
-    DesiredSpeeds[RIGHTSPEED] = 0;
-    DesiredSpeeds[LEFTDIRECTION] = 0;
-    DesiredSpeeds[RIGHTDIRECTION] = 0;
 
 }
 
 void writeSabertoothMC()
 {
+  /*
   //TODO - now that the PID is in place Motor Speeds could possibly be given a value higher than 127, impose a cap of some sort
   byte addressByte;
   byte leftCommandByte;
@@ -58,5 +55,6 @@ void writeSabertoothMC()
   sabertoothSerial.write(rightDataByte);
   sabertoothSerial.write(rightChecksumByte);
   return;
+  */
 }
 
