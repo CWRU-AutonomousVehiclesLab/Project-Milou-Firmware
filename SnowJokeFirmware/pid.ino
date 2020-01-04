@@ -38,3 +38,78 @@ void PID()
   PIDLastTime = currentTime;
   */
 }
+/*
+  //PID constants, move to start of code once PID verified working
+  float kP_left = 0.22;
+  float kI_left = 0.05;
+  float kD_left = 0.001;
+  float kP_right = 0.22;
+  float kI_right = 0.05;
+  float kD_right = 0.001;
+  
+  //PID variables
+  left_speed_error = desiredleftspeed - LeftWheelSpeed;
+  right_speed_error = desiredrightspeed - RightWheelSpeed;
+  
+  AutoLeftSpeed = round(left_speed_error*kP_left + left_speed_error_sum*kI_left + (left_speed_error - left_speed_error_old)*kD_left);
+  AutoRightSpeed = round(right_speed_error*kP_right + right_speed_error_sum*kI_right + (right_speed_error - right_speed_error_old)*kD_right);
+
+  //save previous error state
+  left_speed_error_old = left_speed_error;
+  right_speed_error_old = right_speed_error;
+  
+  //Add error to error sum for integral component
+  left_speed_error_sum += left_speed_error;
+  right_speed_error_sum += right_speed_error;
+  
+  //cap error to prevent huge windup, using arbitrary magic number
+  if (left_speed_error_sum > 4000)
+  {
+    left_speed_error_sum = 4000;
+  }
+  if (left_speed_error_sum < -4000)
+  {
+    left_speed_error_sum = -4000;
+  }
+  
+  if (right_speed_error_sum > 4000)
+  {
+    right_speed_error_sum = 4000;
+  }
+  if (right_speed_error_sum < -4000)
+  {
+    right_speed_error_sum = -4000;
+  }  
+
+//cap motor speeds and specify direction
+  if (AutoLeftSpeed < 0)
+  {
+    LeftMotorDirection = B00000000;
+    LeftMotorSpeed = -1 * AutoLeftSpeed;
+  }
+  else if (AutoLeftSpeed >= 0)
+  {
+    LeftMotorDirection = B00000001;
+    LeftMotorSpeed = AutoLeftSpeed;
+  }
+  
+  if (AutoRightSpeed < 0)
+  {
+    RightMotorDirection = B00000100;
+    RightMotorSpeed = -1 * AutoRightSpeed;
+  }
+  else if (AutoRightSpeed >= 0)
+  {
+    RightMotorDirection = B00000101;
+    RightMotorSpeed = AutoRightSpeed;
+  }
+  
+  if (LeftMotorSpeed > 127)
+  {
+    LeftMotorSpeed = 127;
+  }
+  if (RightMotorSpeed > 127)
+  {
+    RightMotorSpeed = 127;
+  }
+  */
