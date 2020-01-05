@@ -44,7 +44,7 @@ void debugDump(){
   
   if (State == STATE_RC){
     //! Check RC Interpretation
-    debugString = "  RC_CMD is:  V: "+String(rcLinearSpeed)+"   W: "+String(rcAngularSpeed);
+    debugString = "  RC_CMD is:   V: "+String(rcLinearSpeed)+     "   W: "+String(rcAngularSpeed);
     DebugOutput(debugString,0);
   } else if(State == STATE_AUTONOMOUS) {
     //! Check ROS get State
@@ -52,13 +52,18 @@ void debugDump(){
     DebugOutput(debugString,0);
   }
   //! Check IK Calculation
-  debugString = "  IK is:   Left: "+String(desLeftMotorSpeed)+"   R: "+String(desRightMotorSpeed);
+  debugString = "  IK is:             Left: "+String(desLeftMotorSpeed)+  "   Right: "+String(desRightMotorSpeed);
   DebugOutput(debugString,0);
 
-  debugString = "  EncoderCount is:   Left: "+String(leftEncoderPos)+" Right: "+String(rightEncoderPos);
+  debugString = "  EncoderCount is:   Left: "+String(leftEncoderPos)+     "   Right: "+String(rightEncoderPos);
   DebugOutput(debugString,0);
 
-  debugString = "  ActualSpeed is:   Left: "+String(obsLeftMotorSpeed)+" Right: "+String(obsRightMotorSpeed);
+  debugString = "  ActualSpeed is:    Left: "+String(obsLeftMotorSpeed)+  "   Right: "+String(obsRightMotorSpeed);
   DebugOutput(debugString,0);
+
+  debugString = "  PID_DES_Speed is:  Left: "+String(pidedLeftMotorSpeed)+"   Right: "+String(pidedRightMotorSpeed);
+  DebugOutput(debugString,0);
+
+  debugString = "  ActualCommand is:  Left: "+String(cmdLeftMotorSpeed)+  "   Right: "+String(cmdRightMotorSpeed);
   return;
 }

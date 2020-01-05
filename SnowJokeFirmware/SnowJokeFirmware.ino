@@ -1,3 +1,4 @@
+#include <ros.h>
 #include <math.h>
 #include <string.h>
 //!====================Pin Map====================
@@ -44,11 +45,6 @@ volatile boolean Switches[6];
 
 
 //!====================Motor Controller====================
-//for accessing the individual motor speeds in the MotorSpeeds array
-#define LEFTSPEED 0
-#define RIGHTSPEED 1
-#define LEFTDIRECTION 2
-#define RIGHTDIRECTION 3
 //max output to Sabertooth
 #define SABERTOOTHMAX 127
 //for communicating with the Sabertooth controller
@@ -62,6 +58,9 @@ int RightMotorSpeed = B00000000;                                         // set 
 int Checksum1 = (SabertoothAddress + LeftMotorDirection + LeftMotorSpeed); // Check other Motor 1 commands against this
 int Checksum2 = (SabertoothAddress + RightMotorDirection + RightMotorSpeed); // Check other Motor 2 commands against this
 
+// Motor Command:
+int leftMotorDirection = B00000000; 
+int rightMotorDirection = B00000000;
 
 //!====================State Machine====================
 #define STATE_ESTOP 0
@@ -143,24 +142,28 @@ long lastLeftPos = 0;
 long lastRightPos = 0;
 long lastEncoderTime = 0;
 
-float obsLeftMotorSpeed;
-float obsRightMotorSpeed;
+
 
 //!====================PID motor level====================
-//PID Gain Constants
-#define KP 2  //proportional gain
-#define KI 5  //integral gain
-#define KD 1  //derivative gain
-
-//PID Error Variables
-float PIDError[2] = {0,0};
-float PIDIntegralError[2] = {0,0};
-float PIDDerivativeError[2] = {0,0};
-float PIDPreviousError[2] = {0,0};
-//for timing of the PID
 long PIDLastTime = 0;
+//PID constants, move to start of code once PID verified working
+float kP_left = 0.22;
+float kI_left = 0.05;
+float kD_left = 0.001;
+float kP_right = 0.22;
+float kI_right = 0.05;
+float kD_right = 0.001;
 
+// Global Variables
+float left_speed_error_old = 0.0;
+float right_speed_error_old = 0.0;
+float left_speed_error = 0.0;
+float right_speed_error = 0.0;
+float left_speed_error_sum = 0.0;
+float right_speed_error_sum = 0.0;
 
+//PID erro sum cap
+float pidErrorCap = 4000.0;
 //!====================Global Velocity Control====================
 //? What is human readable
 float rcLinearSpeed;
@@ -173,10 +176,13 @@ float desRightMotorSpeed;
 //? What is PID say?
 float pidedLeftMotorSpeed;
 float pidedRightMotorSpeed;
+float cmdLeftMotorSpeed;
+float cmdRightMotorSpeed;
 //? Encoder reading?
 float obsLinearVelocity;
 float obsAngularVelocity;
-
+float obsLeftMotorSpeed;
+float obsRightMotorSpeed;
 
 //!====================Kinematics Calibration Profile====================
 float l_motorConstant = 1.0;
