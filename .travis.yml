@@ -4,10 +4,12 @@ matrix:
       sudo: true
       install:
         #- set -v
-        - export ARDUINO_IDE_VERSION="1.8.8"
+        - git clone https://github.com/CWRU-AutonomousVehiclesLab/ros-arduino-lib
+        - export ARDUINO_IDE_VERSION="1.8.10"
         - wget --quiet https://downloads.arduino.cc/arduino-$ARDUINO_IDE_VERSION-linux64.tar.xz
         - mkdir $HOME/arduino_ide
         - tar xf arduino-$ARDUINO_IDE_VERSION-linux64.tar.xz -C $HOME/arduino_ide/ 
+        - cp -r ros-arduino-lib/ros_lib arduino_ide/arduino-1.8.10/libraries/
         - curl -fsSL https://www.pjrc.com/teensy/td_145/TeensyduinoInstall.linux64 -o TeensyduinoInstall.linux64
         - sudo chmod +x TeensyduinoInstall.linux64
         - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
@@ -20,5 +22,12 @@ matrix:
 
 notifications:
   email:
-    on_success: change
-    on_failure: change
+    recipients:
+      - chude.qian@case.edu
+      - kxc581@case.edu
+    on_success: always
+    on_failure: always
+
+  slack: 
+    on_success: always
+    on_failure: always
