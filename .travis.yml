@@ -5,6 +5,7 @@ matrix:
       install:
         #- set -v
         - git clone https://github.com/CWRU-AutonomousVehiclesLab/ros-arduino-lib
+        - rm -rf ros-arduino-lib/ros_lib/examples
         - export ARDUINO_IDE_VERSION="1.8.10"
         - wget --quiet https://downloads.arduino.cc/arduino-$ARDUINO_IDE_VERSION-linux64.tar.xz
         - mkdir $HOME/arduino_ide
