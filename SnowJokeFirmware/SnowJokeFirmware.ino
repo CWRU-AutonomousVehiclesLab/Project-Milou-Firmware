@@ -1,6 +1,10 @@
 #include <ros.h>
 #include <math.h>
 #include <string.h>
+//! Serial redirect when ROS is enabled:
+#define terminalSerial Serial
+#define sabertoothSerial Serial1
+
 //!====================Pin Map====================
 //? RC
 #define FWDPULSEPIN 2   //RC Channel 2
@@ -28,11 +32,6 @@
 #define RIGHTENCODER_B 20
 
 
-//!====================Serial Code Name====================
-#define terminalSerial Serial
-#define sabertoothSerial Serial1
-
-
 //!====================Switches====================
 //positions for physical switch data in the Switches array
 #define SWITCH_A 0      //autonomous enable
@@ -47,18 +46,23 @@ volatile boolean Switches[6];
 //!====================Motor Controller====================
 //max output to Sabertooth
 #define SABERTOOTHMAX 127
-//for communicating with the Sabertooth controller
-int SabertoothAddress = B10000010;        // set Address to 130
-int SabertoothMask = B01111111;
-int Checksum0 = B00000000;                                         // set
-int LeftMotorDirection = B00000001;                                     // set Motor 1 backwards
-int LeftMotorSpeed = B00000000;                                         // set Motor 1 speed to 0 to start
-int RightMotorDirection = B00000100;                                     // set Motor 2 forwards
-int RightMotorSpeed = B00000000;                                         // set Motor 2 speed to 0 to start
-int Checksum1 = (SabertoothAddress + LeftMotorDirection + LeftMotorSpeed); // Check other Motor 1 commands against this
-int Checksum2 = (SabertoothAddress + RightMotorDirection + RightMotorSpeed); // Check other Motor 2 commands against this
-
-// Motor Command:
+//? Address
+#define SabertoothAddress  B10000010 // set Address to 130
+//? Serial Communication Select:
+#define SabertoothSetSerial B00001111
+#define SabertoothSerialOption B00000100 // option3 baudrate 38400
+//? Timeout Select:
+#define SabertoothSetTimeout B00001110
+#define SabertoothTimeoutOption B00000010
+//? Direction Definition
+#define SB_leftBackward B00000001
+#define SB_leftForward B00000000
+#define SB_rightForward B00000100
+#define SB_rightBackward B00000101
+//? Sabertooth Checksum
+int sbCMDCheck = B00000000;
+#define SabertoothChecksumMask B01111111
+//? Motor Command:
 int leftMotorDirection = B00000000; 
 int rightMotorDirection = B00000000;
 
@@ -174,8 +178,8 @@ float desRightMotorSpeed;
 //? What is PID say?
 float pidedLeftMotorSpeed;
 float pidedRightMotorSpeed;
-float cmdLeftMotorSpeed;
-float cmdRightMotorSpeed;
+int cmdLeftMotorSpeed;
+int cmdRightMotorSpeed;
 //? Encoder reading?
 float obsLinearVelocity;
 float obsAngularVelocity;
@@ -191,3 +195,6 @@ float motorTrim = 0.0;
 
 float k_r = (motorGain + motorTrim)/r_motorConstant;
 float k_l = (motorGain - motorTrim)/l_motorConstant;
+
+//!====================ROS shit=========================================
+ros::NodeHandle nh;

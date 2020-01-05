@@ -27,7 +27,6 @@ void EStopPulse() {
   else {
     RCTempPulseData[ESTOPPULSEDATA] = micros() - RCStartPulse[ESTOPPULSEDATA];
   }
-  //terminalSerial.println("estop pulse off");
   //if EStop Pulse > 1300, disable the software enable output
   if (((int)RCTempPulseData[ESTOPPULSEDATA]) <= EStopThreshold) {
     //DebugOutput("Detected Remote ESTOP Activated!",2);

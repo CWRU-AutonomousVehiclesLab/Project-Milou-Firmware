@@ -3,6 +3,8 @@ void setup() {
   //serial communication with the motor controller on pins 0/1
   // set baud rate to 38400 using the hardware DIP switches as per Sabertooth documentation
 
+
+
   //? Sabertooth Serial
   sabertoothSerial.begin(38400);
   //? PC Serial
@@ -75,4 +77,8 @@ void setup() {
   //Delay 5 seconds to allow for initialization of other components
   DebugOutput("Completed all setup...",2);
   terminalSerial.println("========================================");
+
+  //!====================ROS shit======================
+  nh.initNode();
+
 }

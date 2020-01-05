@@ -17,6 +17,7 @@ void ROSPublish(){
 
 void ROSESTOP(){
     digitalWrite(ROSENABLEPIN,LOW);
+    activateESTOP();
     State = STATE_ESTOP;
     return;
 }

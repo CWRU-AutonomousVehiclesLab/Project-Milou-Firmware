@@ -1,28 +1,42 @@
 void DebugOutput(String outputString, int level, bool debug=true, bool minimal=false)
 {
+  String prefix;
+  String rosString = " [Teensy] "+outputString;
   switch (level)
   {
     case 0:
       if (debug) {
-        terminalSerial.print("[DEBUG]");
+        prefix = "[DEBUG]";
+        //nh.logdebug(rosString.c_str());
+        outputString = prefix + outputString;
       }
       break;
     case 1:
       if (!minimal) {
-        terminalSerial.print("[INFO]");
+        prefix = "[INFO]";
+        //nh.loginfo(rosString.c_str());
+        outputString = prefix + outputString;
       }
       break;
     case 2:
-      terminalSerial.print("[WARNING]");
+      prefix = "[WARNING]";
+      //nh.logwarn(rosString.c_str());
+      outputString = prefix + outputString;
       break;
     case 3:
-      terminalSerial.print("[ERROR]");
+      prefix = "[ERROR]";
+      //nh.logerror(rosString.c_str());
+      outputString = prefix + outputString;
       break;
     case 4:
-      terminalSerial.print("[CRITICAL]");
+      prefix = "[CRITICAL]";
+      //nh.logfatal(rosString.c_str());
+      outputString = prefix + outputString;
       break;
     case 5:
-      terminalSerial.print("[FATAL]");
+      prefix = "[FATAL]";
+      //nh.logfatal(rosString.c_str());
+      outputString = prefix + outputString;
       break;
   }
   terminalSerial.println(outputString);

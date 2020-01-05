@@ -27,8 +27,8 @@ void PID()
   right_speed_error_old = right_speed_error;
 
   //Direction Set: 
-  leftMotorDirection=(pidedLeftMotorSpeed>=0) ? B00000001 : B00000000;
-  rightMotorDirection=(pidedRightMotorSpeed>=0) ? B00000101 : B00000100;
+  leftMotorDirection=(pidedLeftMotorSpeed>=0) ?  SB_leftForward: SB_leftBackward;
+  rightMotorDirection=(pidedRightMotorSpeed>=0) ? SB_rightForward : SB_rightBackward;
 
   // Cap Motor Speed:
   cmdLeftMotorSpeed = min(abs(pidedLeftMotorSpeed),SABERTOOTHMAX);
