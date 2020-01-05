@@ -32,8 +32,8 @@ notifications:
 
     slack:
       rooms:
-      - cwruavl:AUhpEsNkCV7JdQPpDEQWFqF2#travis-reporter
-      - cwruavl:AUhpEsNkCV7JdQPpDEQWFqF2#project-milou
+      - cwruavl:c8BfLwvtO7uK1Ogn2vNLmAro#travis-reporter
+      - cwruavl:c8BfLwvtO7uK1Ogn2vNLmAro#project-milou
       - kxc581@case.edu
       on_success: always
       on_failure: always
