@@ -1,10 +1,35 @@
 void activateESTOP(){
-    digitalWrite(SOFTWAREENABLEPIN, 1); //output low when in EStop State
-
+    desLeftMotorSpeed = 0.0;
+    desRightMotorSpeed = 0.0;
+    cmdLeftMotorSpeed = 0.0;
+    cmdRightMotorSpeed = 0.0;
+    digitalWrite(SABERTOOTHENABLE,LOW);
+    resetPID();
 }
 
-void writeSabertoothMC()
+void enableSabertooth(){
+  digitalWrite(SABERTOOTHENABLE, HIGH);
+}
+
+void sabertoothInit(){
+  //!====================Sabertootn Initial Flush====================
+  //some serial setup stuff.  take a closer look at the values he's passing in at some point
+  sabertoothSerial.write(SabertoothAddress);
+  sabertoothSerial.write(B00001111);
+  sabertoothSerial.write(B00000010);
+  Checksum0 = (SabertoothAddress + B00000010 + B00001111);
+  sabertoothSerial.write(Checksum0 & SabertoothMask);
+  // set timeout to 200ms
+  sabertoothSerial.write(SabertoothAddress);
+  sabertoothSerial.write(B00001110);
+  sabertoothSerial.write(B00000010);
+  Checksum0 = (SabertoothAddress + B00000010 + B00001110);
+  sabertoothSerial.write(Checksum0 & SabertoothMask);
+}
+
+void writeSabertoothMC(int leftSpeed, int rightSpeed)
 {
+  MotorCommandLastSent = millis();
   /*
   //TODO - now that the PID is in place Motor Speeds could possibly be given a value higher than 127, impose a cap of some sort
   byte addressByte;
@@ -15,7 +40,6 @@ void writeSabertoothMC()
   byte rightDataByte;
   byte rightChecksumByte;
 
-  MotorCommandLastSent = millis();
 
   //If robot is estopped, set the speed to 0 for outputting
   if (State == STATE_ESTOP)

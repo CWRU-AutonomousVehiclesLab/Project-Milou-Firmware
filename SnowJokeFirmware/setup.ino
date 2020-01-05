@@ -31,8 +31,8 @@ void setup() {
   pinMode(SWITCHBPIN, INPUT);
   pinMode(SWITCHCPIN, INPUT);
   pinMode(SWITCHDPIN, INPUT);
-  //? software enable pin
-  pinMode(SOFTWAREENABLEPIN, OUTPUT); // set up pin for software enable as an output
+  //? software enable poll
+  pinMode(ROSENABLEPIN, OUTPUT); // set up pin for software enable as an output
   //? Estop Observer
   pinMode(ESTOPPIN, INPUT_PULLUP);
   //? LED Indicator
@@ -44,7 +44,8 @@ void setup() {
   pinMode(LEFTENCODER_B,INPUT);
   pinMode(RIGHTENCODER_A,INPUT);
   pinMode(RIGHTENCODER_B,INPUT);
-
+  //? Sabertooth Kill Switch
+  pinMode(SABERTOOTHENABLE, OUTPUT);
 
 
   //!====================Interrupt Setup====================
@@ -65,36 +66,13 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(SWITCHDPIN), readSwitches, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ESTOPPIN), readSwitches, CHANGE);
 
-  //!====================Sabertootn Initial Flush====================
-  //some serial setup stuff.  take a closer look at the values he's passing in at some point
-  sabertoothSerial.write(SabertoothAddress);
-  sabertoothSerial.write(B00001111);
-  sabertoothSerial.write(B00000010);
-  Checksum0 = (SabertoothAddress + B00000010 + B00001111);
-  sabertoothSerial.write(Checksum0 & SabertoothMask);
-  // set timeout to 200ms
-  sabertoothSerial.write(SabertoothAddress);
-  sabertoothSerial.write(B00001110);
-  sabertoothSerial.write(B00000010);
-  Checksum0 = (SabertoothAddress + B00000010 + B00001110);
-  sabertoothSerial.write(Checksum0 & SabertoothMask);
-
-  //!====================State initialization====================
-  //initialize in the EStop state, no action until the physical estop is cycled
-  State = STATE_ESTOP;
-  NextState = STATE_ESTOP;
-  
-
+  //!====================Initial read State====================
+  // Initialization
+  DebugOutput("Start Initial Setup...",2);
+  startupCheck();
+  delay(5000);
   //!====================Setup Halt====================
   //Delay 5 seconds to allow for initialization of other components
-  delay(5000);
-
-  //!====================Initial read State====================
-  //run all of the various sub-functions and establish an initial run time
-  digitalWrite(SOFTWAREENABLEPIN, HIGH); // All set indicator, enable motor
-  ControlLoop();
-  writeSabertoothMC();
-  readSwitches();
-  GetRCData();
-  ROSPublish();
+  DebugOutput("Completed all setup...",2);
+  terminalSerial.println("========================================");
 }

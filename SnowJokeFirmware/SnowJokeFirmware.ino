@@ -17,9 +17,9 @@
 #define LED_B 23
 //? Estop Signal From Estop Board
 #define ESTOPPIN 11 //Singal from board
-#define SOFTWAREENABLEPIN 16 //Signal to board
+#define ROSENABLEPIN 16 //Signal to board
 //? Sabertooth Motor Controller
-#define SABERTOOTHPINRX 0
+#define SABERTOOTHENABLE 5
 #define SABERTOOTHPINTX 1
 //? Encoder
 #define LEFTENCODER_A 17
@@ -125,9 +125,6 @@ float MaxDesiredSpeed = 2;  //max speed of 2 m/s
 int ENCODERTICKPERREV=1024;
 int MotorRevsPerWheelRev=24;  //assumed from previous code, double check
 
-//constants for referencing values in the encoder structures
-#define LEFTENCODER 0
-#define RIGHTENCODER 1
 
 volatile long leftEncoderPos = 0;
 volatile long rightEncoderPos = 0;
@@ -137,11 +134,9 @@ volatile boolean leftBset = false;
 volatile boolean rightAset = false;
 volatile boolean rightBset = false;
 
-
 long lastLeftPos = 0;
 long lastRightPos = 0;
 long lastEncoderTime = 0;
-
 
 
 //!====================PID motor level====================
@@ -161,6 +156,9 @@ float left_speed_error = 0.0;
 float right_speed_error = 0.0;
 float left_speed_error_sum = 0.0;
 float right_speed_error_sum = 0.0;
+float left_speed_d = 0.0;
+float right_speed_d = 0.0;
+
 
 //PID erro sum cap
 float pidErrorCap = 4000.0;

@@ -19,7 +19,7 @@ void loop() {
     if ((currentTime - MotorCommandLastSent) >= (SABERTOOTHLOOPRATE*2)){
       DebugOutput("Sabertooth Write Loop Out of Sync. Delayed 2 Times!",4);
     }
-      writeSabertoothMC();
+      writeSabertoothMC(cmdLeftMotorSpeed,cmdRightMotorSpeed);
   }
 
   if ((currentTime - ROSLastSent) >= ROSPUBLISHRATE){

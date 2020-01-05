@@ -61,9 +61,14 @@ void debugDump(){
   debugString = "  ActualSpeed is:    Left: "+String(obsLeftMotorSpeed)+  "   Right: "+String(obsRightMotorSpeed);
   DebugOutput(debugString,0);
 
+  pidDebug();
+
+  /*
   debugString = "  PID_DES_Speed is:  Left: "+String(pidedLeftMotorSpeed)+"   Right: "+String(pidedRightMotorSpeed);
   DebugOutput(debugString,0);
-
+  */
+ 
   debugString = "  ActualCommand is:  Left: "+String(cmdLeftMotorSpeed)+  "   Right: "+String(cmdRightMotorSpeed);
+  DebugOutput(debugString,0);  
   return;
 }

@@ -14,3 +14,18 @@ void ROSPublish(){
 }
 
 //https://medium.com/@ericmaggard/building-an-autonomous-car-using-a-1-10th-scale-rc-car-part-3-6e1918813c75
+
+void ROSESTOP(){
+    digitalWrite(ROSENABLEPIN,LOW);
+    State = STATE_ESTOP;
+    return;
+}
+
+void ROSESTOP_CANCEL(){
+    digitalWrite(ROSENABLEPIN,HIGH);
+    return;
+}
+
+void ROS_FEEDBACKESTOP(){
+    return;
+}

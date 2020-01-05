@@ -5,6 +5,7 @@ void ControlLoop()
   writeLEDState(); //Indicate state
   switch (State) {
     case STATE_ESTOP:
+      activateESTOP();
       //! set the next state to the switch positions if in hard estop
       if (Switches[SWITCH_ESTOP] == 0) {
         if (Switches[SWITCH_A] == 0)
@@ -12,9 +13,12 @@ void ControlLoop()
         else
           NextState = STATE_AUTONOMOUS;
       }
+      ROS_FEEDBACKESTOP();
       break;
 
     case STATE_RC:
+      //! 0. Enable Sabertooth
+      enableSabertooth();
       //! 1. Update the Command Velocity and 
       rcPopulateSpeed(); //This should write rcLinearSpeed, rcAngularSpeed
       //! 2. calculate what that mean in Each wheel speeds
@@ -27,6 +31,9 @@ void ControlLoop()
       break;
 
     case STATE_AUTONOMOUS:
+      //! 0. Enable Sabertooth
+      enableSabertooth();    
+      //! 1. Update the Command Velocity and 
       autoPopulateSpeed();
       //! 2. calculate what that mean in Each wheel speeds
       ik(autoLinearVelocity,autoAngularVelocity); //This should populate desLeftMotorSpeed,DesRightMotorSpeed
@@ -39,6 +46,16 @@ void ControlLoop()
   return;
 }
 
-void checkStateChange(){
-  readSwitches();
+void startupCheck(){
+  //!====================State initialization====================
+  //initialize in the EStop state, no action until the physical estop is cycled  
+  State = STATE_ESTOP;
+  NextState = STATE_ESTOP;
+  GetRCData();
+  readSwitches();  
+  sabertoothInit();
+  ROSPublish();
+  digitalWrite(ROSENABLEPIN, HIGH); // All set indicator, enable motor
+  activateESTOP();
+  ControlLoop();
 }
