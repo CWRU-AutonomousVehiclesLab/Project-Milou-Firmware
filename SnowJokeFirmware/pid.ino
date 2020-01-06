@@ -11,6 +11,9 @@ void PID()
   left_speed_d = left_speed_error - left_speed_error_old;
   right_speed_d = right_speed_error - right_speed_error_old;
 
+  float temp_left_speed_error_sum = left_speed_error_sum;
+  float temp_right_speed_error_sum = right_speed_error_sum;
+
   //Add error to error sum for integral component
   left_speed_error_sum += left_speed_error;
   right_speed_error_sum += right_speed_error;
@@ -33,8 +36,8 @@ void PID()
   int leftSignCompare = (((left_speed_error>=0) & (pidedLeftMotorSpeed>=0))||((left_speed_error<0) & (pidedLeftMotorSpeed<0))) ? 1 : 0;
   int rightSignCompare = (((right_speed_error>=0) & (pidedRightMotorSpeed>=0))||((right_speed_error<0) & (pidedRightMotorSpeed<0))) ? 1 : 0;
 
-  left_speed_error_sum = (leftSaturated & leftSignCompare) ? (left_speed_error_sum-= left_speed_error) : left_speed_error_sum;
-  right_speed_error_sum = (rightSaturated & rightSignCompare) ? (right_speed_error_sum-= right_speed_error) :right_speed_error_sum;
+  left_speed_error_sum = (leftSaturated & leftSignCompare) ? temp_left_speed_error_sum : left_speed_error_sum;
+  right_speed_error_sum = (rightSaturated & rightSignCompare) ? temp_right_speed_error_sum : right_speed_error_sum;
 
   //cap error to prevent huge windup, using arbitrary magic number
   //left_speed_error_sum = max(min(left_speed_error_sum,pidErrorCap),pidErrorCap*-1.0);
