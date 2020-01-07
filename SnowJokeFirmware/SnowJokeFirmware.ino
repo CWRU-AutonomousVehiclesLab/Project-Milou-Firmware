@@ -45,7 +45,7 @@ volatile boolean Switches[6];
 
 //!====================Motor Controller====================
 //max output to Sabertooth
-#define SABERTOOTHMAX 127
+#define SABERTOOTHMAX 125
 //? Address
 #define SabertoothAddress  B10000010 // set Address to 130
 //? Serial Communication Select:
