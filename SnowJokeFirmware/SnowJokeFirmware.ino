@@ -7,29 +7,29 @@
 
 //!====================Pin Map====================
 //? RC
-#define FWDPULSEPIN 2   //RC Channel 2
-#define ANGPULSEPIN 3   //RC Channel 1
-#define ESTOPPULSEPIN 4 //RC Channel 3
+#define FWDPULSEPIN 6   //RC Channel 2
+#define ANGPULSEPIN 7   //RC Channel 1
+#define ESTOPPULSEPIN 8 //RC Channel 3
 //? Switch Toggle
-#define SWITCHAPIN 7
-#define SWITCHBPIN 8
-#define SWITCHCPIN 9
-#define SWITCHDPIN 10
+#define SWITCHAPIN 27
+#define SWITCHBPIN 28
+#define SWITCHCPIN 29
+#define SWITCHDPIN 30
 //? RGB Addressable LED
 #define LED_R 21
 #define LED_G 22
 #define LED_B 23
 //? Estop Signal From Estop Board
-#define ESTOPPIN 11 //Singal from board
-#define ROSENABLEPIN 16 //Signal to board
+#define ESTOPPIN 13 //Singal from board
+#define ROSENABLEPIN 11 //Signal to board
 //? Sabertooth Motor Controller
-#define SABERTOOTHENABLE 5
+#define SABERTOOTHENABLE 0
 #define SABERTOOTHPINTX 1
 //? Encoder
 #define LEFTENCODER_A 17
-#define LEFTENCODER_B 18
+#define LEFTENCODER_B 16
 #define RIGHTENCODER_A 19
-#define RIGHTENCODER_B 20
+#define RIGHTENCODER_B 18
 
 
 //!====================Switches====================
