@@ -7,14 +7,14 @@ void LeftEncoderA(){
   // Test transition
   leftAset = digitalRead(LEFTENCODER_A)== HIGH;
   // adn adjust counter + if A leads B
-  leftEncoderPos += (leftAset != leftBset) ? +1 : -1;
+  leftEncoderPos += (leftAset != leftBset) ? -1 : +1;
 }
 
 void LeftEncoderB() {
   // Test transition
   leftBset = digitalRead(LEFTENCODER_B) == HIGH;
   // and adjust counter + if B follows A
-  leftEncoderPos += (leftAset == leftBset) ? +1 : -1;
+  leftEncoderPos += (leftAset == leftBset) ? -1 : +1;
 }
 
 
@@ -22,14 +22,14 @@ void RightEncoderA(){
   // Test transition
   rightAset = digitalRead(RIGHTENCODER_A)== HIGH;
   // adn adjust counter + if A leads B
-  rightEncoderPos += (rightAset != rightBset) ? +1 : -1;
+  rightEncoderPos += (rightAset != rightBset) ? -1 : +1;
 }
 
 void RightEncoderB() {
   // Test transition
   rightBset = digitalRead(RIGHTENCODER_B) == HIGH;
   // and adjust counter + if B follows A
-  rightEncoderPos += (rightAset == rightBset) ? +1 : -1;
+  rightEncoderPos += (rightAset == rightBset) ? -1 : +1;
 }
 
 /*

@@ -8,7 +8,7 @@ void ControlLoop()
       activateESTOP();
       //! set the next state to the switch positions if in hard estop
       if (Switches[SWITCH_ESTOP] == 0) {
-        if (Switches[SWITCH_A] == 0)
+        if (Switches[SWITCH_D] == 0)
           NextState = STATE_RC;
         else
           NextState = STATE_AUTONOMOUS;

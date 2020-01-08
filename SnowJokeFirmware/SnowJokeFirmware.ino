@@ -26,9 +26,10 @@
 #define SABERTOOTHENABLE 0
 #define SABERTOOTHPINTX 1
 //? Encoder
-#define LEFTENCODER_A 17
-#define LEFTENCODER_B 16
-#define RIGHTENCODER_A 19
+
+#define LEFTENCODER_A 16
+#define LEFTENCODER_B 15
+#define RIGHTENCODER_A 17
 #define RIGHTENCODER_B 18
 
 
@@ -45,7 +46,7 @@ volatile boolean Switches[6];
 
 //!====================Motor Controller====================
 //max output to Sabertooth
-#define SABERTOOTHMAX 125
+#define SABERTOOTHMAX 127
 //? Address
 #define SabertoothAddress  B10000010 // set Address to 130
 //? Serial Communication Select:
@@ -55,10 +56,10 @@ volatile boolean Switches[6];
 #define SabertoothSetTimeout B00001110
 #define SabertoothTimeoutOption B00000010
 //? Direction Definition
-#define SB_leftBackward B00000001
-#define SB_leftForward B00000000
-#define SB_rightForward B00000100
-#define SB_rightBackward B00000101
+#define SB_leftBackward B00000100
+#define SB_leftForward B00000101
+#define SB_rightForward B00000000
+#define SB_rightBackward B00000001
 //? Sabertooth Checksum
 int sbCMDCheck = B00000000;
 #define SabertoothChecksumMask B01111111
@@ -85,7 +86,7 @@ long MotorCommandLastSent = 0;
 //For Controlling last time published to ROS
 long ROSLastSent = 0;
 //milliseconds between outputting debug info (1 hz)
-#define DEBUGOUTPUTRATE 100
+#define DEBUGOUTPUTRATE 20
 //milliseconds between running the control loop (50 hz)
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz=20ms)
