@@ -7,29 +7,29 @@
 
 //!====================Pin Map====================
 //? RC
-#define FWDPULSEPIN 2   //RC Channel 2
-#define ANGPULSEPIN 3   //RC Channel 1
-#define ESTOPPULSEPIN 4 //RC Channel 3
+#define FWDPULSEPIN 6   //RC Channel 2
+#define ANGPULSEPIN 7   //RC Channel 1
+#define ESTOPPULSEPIN 8 //RC Channel 3
 //? Switch Toggle
-#define SWITCHAPIN 7
-#define SWITCHBPIN 8
-#define SWITCHCPIN 9
-#define SWITCHDPIN 10
+#define SWITCHAPIN 27
+#define SWITCHBPIN 28
+#define SWITCHCPIN 29
+#define SWITCHDPIN 30
 //? RGB Addressable LED
 #define LED_R 21
 #define LED_G 22
 #define LED_B 23
 //? Estop Signal From Estop Board
-#define ESTOPPIN 11 //Singal from board
-#define ROSENABLEPIN 16 //Signal to board
+#define ESTOPPIN 13 //Singal from board
+#define ROSENABLEPIN 11 //Signal to board
 //? Sabertooth Motor Controller
-#define SABERTOOTHENABLE 5
+#define SABERTOOTHENABLE 0
 #define SABERTOOTHPINTX 1
 //? Encoder
-#define LEFTENCODER_A 17
-#define LEFTENCODER_B 18
-#define RIGHTENCODER_A 19
-#define RIGHTENCODER_B 20
+#define LEFTENCODER_A 16
+#define LEFTENCODER_B 15
+#define RIGHTENCODER_A 17
+#define RIGHTENCODER_B 18
 
 
 //!====================Switches====================
@@ -45,7 +45,7 @@ volatile boolean Switches[6];
 
 //!====================Motor Controller====================
 //max output to Sabertooth
-#define SABERTOOTHMAX 125
+#define SABERTOOTHMAX 127
 //? Address
 #define SabertoothAddress  B10000010 // set Address to 130
 //? Serial Communication Select:
@@ -55,10 +55,10 @@ volatile boolean Switches[6];
 #define SabertoothSetTimeout B00001110
 #define SabertoothTimeoutOption B00000010
 //? Direction Definition
-#define SB_leftBackward B00000001
-#define SB_leftForward B00000000
-#define SB_rightForward B00000100
-#define SB_rightBackward B00000101
+#define SB_leftBackward B00000100
+#define SB_leftForward B00000101
+#define SB_rightForward B00000000
+#define SB_rightBackward B00000001
 //? Sabertooth Checksum
 int sbCMDCheck = B00000000;
 #define SabertoothChecksumMask B01111111
@@ -85,7 +85,7 @@ long MotorCommandLastSent = 0;
 //For Controlling last time published to ROS
 long ROSLastSent = 0;
 //milliseconds between outputting debug info (1 hz)
-#define DEBUGOUTPUTRATE 100
+#define DEBUGOUTPUTRATE 20
 //milliseconds between running the control loop (50 hz)
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz=20ms)

@@ -54,7 +54,7 @@ void writeSabertoothMC(int leftSpeed, int rightSpeed)
   sbCMDCheck = (SabertoothAddress+leftMotorDirection+cmdLeftMotorSpeed)&SabertoothChecksumMask;
   sabertoothSerial.write(sbCMDCheck);
 
-  //+++++++++++LEFT MOTOR+++++++++++++++++
+  //+++++++++++Right MOTOR+++++++++++++++++
   //? 1. Address select:
   sabertoothSerial.write(SabertoothAddress);
   //? 2. Direction(Mode) Select

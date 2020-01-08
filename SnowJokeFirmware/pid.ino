@@ -11,43 +11,28 @@ void PID()
   left_speed_d = left_speed_error - left_speed_error_old;
   right_speed_d = right_speed_error - right_speed_error_old;
 
-  float temp_left_speed_error_sum = left_speed_error_sum;
-  float temp_right_speed_error_sum = right_speed_error_sum;
-
   //Add error to error sum for integral component
   left_speed_error_sum += left_speed_error;
   right_speed_error_sum += right_speed_error;
 
+  //cap error to prevent huge windup, using arbitrary magic number
+  left_speed_error_sum = max(min(left_speed_error_sum,pidErrorCap),pidErrorCap*-1.0);
+  right_speed_error_sum = max(min(right_speed_error_sum,pidErrorCap),pidErrorCap*-1.0);
+
   pidedLeftMotorSpeed = round(left_speed_error*kP_left + left_speed_error_sum*kI_left + left_speed_d*kD_left);
   pidedRightMotorSpeed = round(right_speed_error*kP_right + right_speed_error_sum*kI_right + right_speed_d*kD_right);
-
-  //Direction Set: 
-  leftMotorDirection=(pidedLeftMotorSpeed>=0) ?  SB_leftForward: SB_leftBackward;
-  rightMotorDirection=(pidedRightMotorSpeed>=0) ? SB_rightForward : SB_rightBackward;
-
-  //? Wind up prevention: https://www.youtube.com/watch?v=NVLXCwc8HzM
-  // Clamp
-  cmdLeftMotorSpeed = min(abs(pidedLeftMotorSpeed),SABERTOOTHMAX);
-  cmdRightMotorSpeed = min(abs(pidedRightMotorSpeed),SABERTOOTHMAX);
-
-  int leftSaturated  = (cmdLeftMotorSpeed == pidedLeftMotorSpeed) ? 0 : 1;
-  int rightSaturated = (cmdRightMotorSpeed == pidedRightMotorSpeed) ? 0 : 1;
-
-  int leftSignCompare = (((left_speed_error>=0) & (pidedLeftMotorSpeed>=0))||((left_speed_error<0) & (pidedLeftMotorSpeed<0))) ? 1 : 0;
-  int rightSignCompare = (((right_speed_error>=0) & (pidedRightMotorSpeed>=0))||((right_speed_error<0) & (pidedRightMotorSpeed<0))) ? 1 : 0;
-
-  left_speed_error_sum = (leftSaturated & leftSignCompare) ? temp_left_speed_error_sum : left_speed_error_sum;
-  right_speed_error_sum = (rightSaturated & rightSignCompare) ? temp_right_speed_error_sum : right_speed_error_sum;
-
-  //cap error to prevent huge windup, using arbitrary magic number
-  //left_speed_error_sum = max(min(left_speed_error_sum,pidErrorCap),pidErrorCap*-1.0);
-  //right_speed_error_sum = max(min(right_speed_error_sum,pidErrorCap),pidErrorCap*-1.0);
 
   //save previous error state
   left_speed_error_old = left_speed_error;
   right_speed_error_old = right_speed_error;
 
+  //Direction Set: 
+  leftMotorDirection=(pidedLeftMotorSpeed>=0) ?  SB_leftForward: SB_leftBackward;
+  rightMotorDirection=(pidedRightMotorSpeed>=0) ? SB_rightForward : SB_rightBackward;
 
+  // Cap Motor Speed:
+  cmdLeftMotorSpeed = min(abs(pidedLeftMotorSpeed),SABERTOOTHMAX);
+  cmdRightMotorSpeed = min(abs(pidedRightMotorSpeed),SABERTOOTHMAX);
 
   PIDLastTime = currentTime;
 }
@@ -60,6 +45,8 @@ void resetPID(){
     right_speed_error = 0.0;
     right_speed_error_old = 0.0;
     right_speed_error_sum = 0.0;
+    leftEncoderPos = 0;
+    rightEncoderPos = 0;
 }
 
 void pidDebug(){
