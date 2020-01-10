@@ -1,8 +1,16 @@
-#include <ros.h>
+
 #include <math.h>
 #include <string.h>
+
+//! ROS includes:
+#include <ros.h>
+#include <ros/time.h>
+#include <std_msgs/int8_t>
+#include <geometry_msgs/Twist.h>
+
+
 //! Serial redirect when ROS is enabled:
-#define terminalSerial Serial
+#define terminalSerial Serial4
 #define sabertoothSerial Serial1
 
 //!====================Pin Map====================
@@ -199,3 +207,6 @@ float k_l = (motorGain - motorTrim)/l_motorConstant;
 
 //!====================ROS shit=========================================
 ros::NodeHandle nh;
+ros::Subscriber<geometry_msgs::Twist> velSubscriber("cmd_vel",&autoPopulateSpeed);
+ros::Subscriber<std_msgs::int8_t> estopIndicator("estop",&ROSESTOP)
+ros::Publisher<> statusPublisher("teensyStatus",&teensyStatus)

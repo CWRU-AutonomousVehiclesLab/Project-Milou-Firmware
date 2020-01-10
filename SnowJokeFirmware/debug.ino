@@ -62,7 +62,7 @@ void debugDump(){
     DebugOutput(debugString,0);
   } else if(State == STATE_AUTONOMOUS) {
     //! Check ROS get State
-    debugString = "  RC_CMD is:   V: "+String(autoLinearVelocity)+"   W: "+String(autoAngularVelocity);
+    debugString = "  Autonomous_CMD is:   V: "+String(autoLinearVelocity)+"   W: "+String(autoAngularVelocity);
     DebugOutput(debugString,0);
   }
   //! Check IK Calculation

@@ -37,6 +37,6 @@ void loop() {
     }
     debugDump();
   }
-
-
+  
+  nh.spinOnce();
 }

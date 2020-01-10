@@ -15,17 +15,18 @@ void ROSPublish(){
 
 //https://medium.com/@ericmaggard/building-an-autonomous-car-using-a-1-10th-scale-rc-car-part-3-6e1918813c75
 
-void ROSESTOP(){
-    digitalWrite(ROSENABLEPIN,LOW);
-    activateESTOP();
-    State = STATE_ESTOP;
-    return;
+void ROSESTOP(const std_msgs::int8_t& msg){
+    if (msg.data==0){
+        digitalWrite(ROSENABLEPIN,LOW);
+        activateESTOP();
+        State = STATE_ESTOP;
+        debugOutput("ROS ESTOP REQUESTED!",2);
+    }else{
+        digitalWrite(ROSENABLEPIN,HIGH);
+        State = NextState;
+    }
 }
 
-void ROSESTOP_CANCEL(){
-    digitalWrite(ROSENABLEPIN,HIGH);
-    return;
-}
 
 void ROS_FEEDBACKESTOP(){
     return;

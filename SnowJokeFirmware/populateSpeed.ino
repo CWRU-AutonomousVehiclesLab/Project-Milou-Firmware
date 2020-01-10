@@ -6,8 +6,9 @@ void rcPopulateSpeed(){
     rcAngularSpeed = (abs(AngularPulse-RCCenter)<=100) ? 0.0 :map(AngularPulse, RCMin, RCMax, -2.0, 2.0);
 }
 
-void autoPopulateSpeed(){
-    return;
+void autoPopulateSpeed(const geometry_msgs::Twist& msg){
+    autoLinearVelocity = msg.linear.x;
+    autoAngularVelocity = msg.angular.z;
 }
 
 void actualObsSpeed(){
