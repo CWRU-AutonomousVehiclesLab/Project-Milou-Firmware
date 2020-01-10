@@ -9,9 +9,8 @@
 #include <string.h>
 
 
-
 //! Serial redirect when ROS is enabled:
-#define terminalSerial Serial4
+#define terminalSerial Serial5
 #define sabertoothSerial Serial1
 
 //!====================Pin Map====================
@@ -95,7 +94,7 @@ long MotorCommandLastSent = 0;
 //For Controlling last time published to ROS
 long ROSLastSent = 0;
 //milliseconds between outputting debug info (1 hz)
-#define DEBUGOUTPUTRATE 20
+#define DEBUGOUTPUTRATE 500
 //milliseconds between running the control loop (50 hz)
 #define CONTROLLOOPRATE 20
 //milliseconds between running the motor controller output loop (50 hz=20ms)

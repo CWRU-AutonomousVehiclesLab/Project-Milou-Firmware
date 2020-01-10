@@ -3,12 +3,10 @@ void setup() {
   //serial communication with the motor controller on pins 0/1
   // set baud rate to 38400 using the hardware DIP switches as per Sabertooth documentation
 
-
-
   //? Sabertooth Serial
   sabertoothSerial.begin(38400);
   //? PC Serial
-  terminalSerial.begin(38400);
+  terminalSerial.begin(115200);
   /*
   //!====================Speed Init====================
   //Setting initial values for the motor speed both pre and post PID
@@ -72,7 +70,9 @@ void setup() {
   // Initialization
   DebugOutput("Start Initial Setup...",2);
   startupCheck();
-  delay(5000);
+  delay(1000);
+  DebugOutput("Check Done...",2);
+
   //!====================Setup Halt====================
   //Delay 5 seconds to allow for initialization of other components
   DebugOutput("Completed all setup...",2);
@@ -80,6 +80,16 @@ void setup() {
 
   //!====================ROS shit======================
   nh.initNode();
+  delay(1000);
+  DebugOutput("Node Init OK...",2);
   nh.subscribe(velSubscriber);
+  delay(1000);
+  DebugOutput("velsub ok",2);
+  nh.subscribe(estopIndicator);
+  delay(1000);
+  DebugOutput("estop sub ok",2);
   nh.advertise(statusPublisher);
+  delay(1000);
+  DebugOutput("telemetry pub ok",2);
+  terminalSerial.println("========================================");  
 }

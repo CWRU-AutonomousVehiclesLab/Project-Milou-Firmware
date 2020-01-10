@@ -53,7 +53,7 @@ void startupCheck(){
   GetRCData();
   readSwitches();  
   sabertoothInit();
-  ROSPublish();
+  //ROSPublish();
   digitalWrite(ROSENABLEPIN, HIGH); // All set indicator, enable motor
   activateESTOP();
   ControlLoop();
