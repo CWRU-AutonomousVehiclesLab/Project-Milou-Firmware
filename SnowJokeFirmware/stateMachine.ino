@@ -13,7 +13,6 @@ void ControlLoop()
         else
           NextState = STATE_AUTONOMOUS;
       }
-      ROS_FEEDBACKESTOP();
       break;
 
     case STATE_RC:
@@ -34,7 +33,7 @@ void ControlLoop()
       //! 0. Enable Sabertooth
       enableSabertooth();    
       //! 1. Update the Command Velocity and 
-      autoPopulateSpeed();
+      //by ros callback
       //! 2. calculate what that mean in Each wheel speeds
       ik(autoLinearVelocity,autoAngularVelocity); //This should populate desLeftMotorSpeed,DesRightMotorSpeed
       //! 3. PID smooth the desired left motor speed and right motor speed.

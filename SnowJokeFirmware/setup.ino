@@ -81,4 +81,5 @@ void setup() {
   //!====================ROS shit======================
   nh.initNode();
   nh.subscribe(velSubscriber);
+  nh.advertise(statusPublisher);
 }

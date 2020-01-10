@@ -1,12 +1,13 @@
 
-#include <math.h>
-#include <string.h>
-
 //! ROS includes:
 #include <ros.h>
 #include <ros/time.h>
-#include <std_msgs/int8_t>
+#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
+#include <milou_teensy_telemetry/teensyTelemetry.h>
+#include <math.h>
+#include <string.h>
+
 
 
 //! Serial redirect when ROS is enabled:
@@ -205,8 +206,29 @@ float motorTrim = 0.0;
 float k_r = (motorGain + motorTrim)/r_motorConstant;
 float k_l = (motorGain - motorTrim)/l_motorConstant;
 
+
 //!====================ROS shit=========================================
 ros::NodeHandle nh;
+
+void autoPopulateSpeed(const geometry_msgs::Twist & msg){
+    autoLinearVelocity = msg.linear.x;
+    autoAngularVelocity = msg.angular.z;
+}
+
+void ROSESTOP(const std_msgs::Bool& msg){
+    if (msg.data==true){
+        digitalWrite(ROSENABLEPIN,LOW);
+        activateESTOP();
+        State = STATE_ESTOP;
+    }else{
+        digitalWrite(ROSENABLEPIN,HIGH);
+        State = NextState;
+    }
+    return;
+}
+
 ros::Subscriber<geometry_msgs::Twist> velSubscriber("cmd_vel",&autoPopulateSpeed);
-ros::Subscriber<std_msgs::int8_t> estopIndicator("estop",&ROSESTOP)
-ros::Publisher<> statusPublisher("teensyStatus",&teensyStatus)
+ros::Subscriber<std_msgs::Bool> estopIndicator("estop",&ROSESTOP);
+
+milou_teensy_telemetry::teensyTelemetry telemetryMessage;
+ros::Publisher statusPublisher("teensyStatus",&telemetryMessage);
