@@ -62,7 +62,4 @@ void pidDebug(){
 
   debugString = "  D is:  Left: "+String(left_speed_d)+  "   Right: "+String(right_speed_d);
   DebugOutput(debugString,0); 
-
-  debugString = "  D is:  Left: "+String(left_speed_d)+  "   Right: "+String(right_speed_d);
-  DebugOutput(debugString,0); 
 }

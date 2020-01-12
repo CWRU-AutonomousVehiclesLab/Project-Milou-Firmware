@@ -26,8 +26,8 @@ void loop() {
     if ((currentTime - MotorCommandLastSent) >= (SABERTOOTHLOOPRATE*2)){
       DebugOutput("ROS Feedback Loop Out of Sync. Delayed 2 Times!",5);
     }    
-    //ROSPublish();
-    //statusPublisher.publish(&telemetryMessage);
+    ROSPublish();
+    statusPublisher.publish(&telemetryMessage);
   }
 
   // If switch C is enabled the robot is in debug mode; dump output to console
