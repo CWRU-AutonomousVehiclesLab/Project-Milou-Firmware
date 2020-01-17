@@ -2,8 +2,8 @@ void rcPopulateSpeed(){
     float ForwardPulse = RCPulseData[FWDPULSEDATA];
     float AngularPulse = RCPulseData[ANGPULSEDATA];
     
-    rcLinearSpeed = (abs(ForwardPulse-RCCenter)<=100) ? 0.0 : map(ForwardPulse, RCMin, RCMax, -2.0, 2.0);
-    rcAngularSpeed = (abs(AngularPulse-RCCenter)<=100) ? 0.0 :map(AngularPulse, RCMin, RCMax, -2.0, 2.0);
+    rcLinearSpeed = (abs(ForwardPulse-RCCenter)<=30) ? 0.0 : map(ForwardPulse, RCMin, RCMax, -2.0, 2.0);
+    rcAngularSpeed = (abs(AngularPulse-RCCenter)<=30) ? 0.0 :map(AngularPulse, RCMin, RCMax, -2.0, 2.0);
 }
 
 
