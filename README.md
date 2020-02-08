@@ -23,6 +23,8 @@ To contact email [Frank](mailto:cxq41@case.edu) if it is before 2021. If it is a
 ## Development Enviorment Setup
 To develop teensy, you will need to use teensy duino, refer to [Teensy documentation](https://www.pjrc.com/teensy/td_download.html). This project uses Teensy 3.6 as its main development board. However, if you have a teensy 4.0 handy, you should be able to use that too, with some minor modifications and digging in the ROS Arduino Library. 
 
+Once you have Arduino and Teensy Arduino installed, please make sure you have included ROS Arduino Library. For the most current ROS-Arduino-Lib that this project uses, you can find them [here](https://github.com/CWRU-AutonomousVehiclesLab/ros-arduino-lib). Just simply put this in your Arduino Library Enviornment. If you need to add additional custom ROS messages, you can find them [at ROS wiki](http://wiki.ros.org/rosserial_arduino/Tutorials/Adding%20Custom%20Messages).
+
 **NOTE: Currently, ROS Arduino does not officially support teensy 4.0**.
 
 ## Firmware documentation
