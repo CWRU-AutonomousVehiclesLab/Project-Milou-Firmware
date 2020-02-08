@@ -7,7 +7,7 @@ The firmware code for Milou is seperated into the followings:
 | encoderProcess.ino   	|  This file contains the encoder callback function. It updates the left and right encoder tick. 	|
 | kinematics.ino  	|   This file includes all the kinematics calculation. Currently Milou uses Skid Steer (aka Roomba method). <br> **You will need to change this file if your robot is not skid steer.**  	|
 | ledIndicator.ino  | This file contains the led indicator code. Basically, RGB means different operation mode. |
-| SnowJokeFirmware.ino | This file is the magical sheet for nearly 100 global variables. Have fun! Additionally, it also hosts ROS publisher, subscriber as well as ROS callback functions too.|
+| MilouFirmware.ino | This file is the magical sheet for nearly 100 global variables. Have fun! Additionally, it also hosts ROS publisher, subscriber as well as ROS callback functions too.|
 | pid.ino | This file contains the biggest work for the firmware, the PID system. If your robot is not Milou, you might want to go back to the master list of global variables and tune the PID parameters. |
 | populateSpeed.ino | This file is used for converting RC pulses into linear and angular speed, as well as calculate the speed that is observed using wheel encoder. |
 | rcProgress.ino | This file is used for storing the 3 RC interrupt to update the detected RC pulses. Additionally, this holds the function for updating the RC pulse from memory directly.|
