@@ -1,4 +1,5 @@
-# Project Milou Firmware Repo [![Build Status](https://travis-ci.com/CWRU-AutonomousVehiclesLab/Project-Milou-Firmware.svg?token=b4xHzfFvkzsycZ1PMx5q&branch=development)](https://travis-ci.com/CWRU-AutonomousVehiclesLab/Project-Milou-Firmware)  [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+# Project Milou Firmware Repo [![Build Status](https://travis-ci.com/CWRU-AutonomousVehiclesLab/Project-Milou-Firmware.svg?token=b4xHzfFvkzsycZ1PMx5q&branch=development)](https://travis-ci.com/CWRU-AutonomousVehiclesLab/Project-Milou-Firmware)  [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)  [![DOI](https://zenodo.org/badge/210698414.svg)](https://zenodo.org/badge/latestdoi/210698414)
+
 
 
 This repository contains code for Milou firmware that runs on Teensy 3.6. The teensy platform utilizes teensyduino IDE, a variation of the arduino. The system is setup to both operate under ROS enviornment as well as simple RC mode. You can also add in additional modes for dead reackoning feature.
