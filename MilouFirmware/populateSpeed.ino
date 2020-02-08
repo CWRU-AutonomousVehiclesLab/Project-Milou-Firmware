@@ -1,3 +1,12 @@
+/**
+ * rcPopulateSpeed populate speed using RC reciever pulses.
+ * 
+ * @param RCPulseData The RC Pulse Data that is populated by rcProcess.ino.
+ * @param RCCenter, RCMin, RCMax Global parameter for how the RC is setup.
+ * 
+ * @return rcLinearSpeed,rcAngularSpeed writes globally
+ * 
+*/
 void rcPopulateSpeed(){
     float ForwardPulse = RCPulseData[FWDPULSEDATA];
     float AngularPulse = RCPulseData[ANGPULSEDATA];
@@ -7,7 +16,14 @@ void rcPopulateSpeed(){
 }
 
 
-
+/**
+ * actualObsSpeed populate the actual speed of the two side wheels robot
+ * 
+ * @param leftEncoderPos, rightEncoderPos The current observed left and right encoder tick.
+ * @param lastLeftPos,lastRightPos The last observed left and right encoder tick.
+ * @param ENCODERTICKPERREV, MotorRevsPerWheelRev, WheelDiameter The characteristics of the robot.
+ * @param lastEncoderTime The time to obtain the dt value.
+*/
 void actualObsSpeed(){
     // Get the position first
     long currentLeftPos = leftEncoderPos;

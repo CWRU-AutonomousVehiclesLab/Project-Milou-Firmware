@@ -1,4 +1,8 @@
-//! 2. Feedup the motor speed from encoder_rpm
+/**
+ * TODO: 
+ * 
+*/
+
 
 //! 3. subscribe commanded velocity and velocity (This should be in populate speed)
 
@@ -7,9 +11,6 @@
 //! 5. GPS interface
 
 //https://medium.com/@ericmaggard/building-an-autonomous-car-using-a-1-10th-scale-rc-car-part-3-6e1918813c75
-
-
-
 
 void ROSPublish(){
     ROSLastSent = millis();

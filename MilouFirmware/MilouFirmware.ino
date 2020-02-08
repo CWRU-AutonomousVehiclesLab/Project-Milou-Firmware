@@ -34,7 +34,6 @@
 #define SABERTOOTHENABLE 0
 #define SABERTOOTHPINTX 1
 //? Encoder
-
 #define LEFTENCODER_A 16
 #define LEFTENCODER_B 15
 #define RIGHTENCODER_A 17

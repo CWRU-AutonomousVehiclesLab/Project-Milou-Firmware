@@ -26,7 +26,7 @@ notifications:
   email:
     recipients:
       - chude.qian@case.edu
-      - kxc581@case.edu
+      - flm@case.edu
     on_success: always
     on_failure: always
 
@@ -34,6 +34,6 @@ notifications:
       rooms:
       - cwruavl:c8BfLwvtO7uK1Ogn2vNLmAro#travis-reporter
       - cwruavl:c8BfLwvtO7uK1Ogn2vNLmAro#project-milou
-      - kxc581@case.edu
+      - flm@case.edu
       on_success: always
       on_failure: always
